@@ -1,120 +1,16 @@
 import { useState } from 'react'
 import './App.css'
-
-const initialBoard = [
-  ['blue', null, 'red', 'blue', null, 'red'],
-  [null, null, null, null, null, null],
-  ['red', null, null, null, null, 'blue'],
-  ['blue', null, null, null, null, 'red'],
-  [null, null, null, null, null, null],
-  ['red', null, 'blue', 'red', null, 'blue'],
-]
-
-const directions = [
-  {
-    name: 'up',
-    rowStep: -1,
-    columnStep: 0,
-    symbol: '↑',
-  },
-  {
-    name: 'right',
-    rowStep: 0,
-    columnStep: 1,
-    symbol: '→',
-  },
-  {
-    name: 'down',
-    rowStep: 1,
-    columnStep: 0,
-    symbol: '↓',
-  },
-  {
-    name: 'left',
-    rowStep: 0,
-    columnStep: -1,
-    symbol: '←',
-  },
-]
-
-function isInsideBoard(row, column) {
-  return row >= 0 && row < 6 && column >= 0 && column < 6
-}
-
-function getAvailableMoves(board, startRow, startColumn) {
-  return directions
-    .map((direction) => {
-      let row = startRow + direction.rowStep
-      let column = startColumn + direction.columnStep
-      let target = null
-
-      while (
-        isInsideBoard(row, column) &&
-        board[row][column] === null
-      ) {
-        target = { row, column }
-        row += direction.rowStep
-        column += direction.columnStep
-      }
-
-      if (!target) return null
-
-      return {
-        ...direction,
-        target,
-      }
-    })
-    .filter((move) => move !== null)
-}
-
-function hasWinningLine(board, color) {
-  for (let row = 0; row < 6; row += 1) {
-    let consecutiveCrabs = 0
-
-    for (let column = 0; column < 6; column += 1) {
-      if (board[row][column] === color) {
-        consecutiveCrabs += 1
-
-        if (consecutiveCrabs >= 4) return true
-      } else {
-        consecutiveCrabs = 0
-      }
-    }
-  }
-
-  for (let column = 0; column < 6; column += 1) {
-    let consecutiveCrabs = 0
-
-    for (let row = 0; row < 6; row += 1) {
-      if (board[row][column] === color) {
-        consecutiveCrabs += 1
-
-        if (consecutiveCrabs >= 4) return true
-      } else {
-        consecutiveCrabs = 0
-      }
-    }
-  }
-
-  return false
-}
-
-function getRandomPlayer() {
-  return Math.random() < 0.5 ? 'blue' : 'red'
-}
-
-function hasAnyAvailableMove(board, color) {
-  return board.some((row, rowIndex) =>
-    row.some(
-      (cell, columnIndex) =>
-        cell === color &&
-        getAvailableMoves(board, rowIndex, columnIndex).length > 0,
-    ),
-  )
-}
+import { INITIAL_BOARD } from './game/constants'
+import {
+  getAvailableMoves,
+  getRandomPlayer,
+  hasAnyAvailableMove,
+  hasWinningLine,
+} from './game/gameLogic'
+import Board from './components/Board/Board'
 
 function App() {
-  const [board, setBoard] = useState(initialBoard)
+  const [board, setBoard] = useState(INITIAL_BOARD)
   const [selectedCrab, setSelectedCrab] = useState(null)
   const [currentPlayer, setCurrentPlayer] = useState(getRandomPlayer)
   const [winner, setWinner] = useState(null)
@@ -200,7 +96,7 @@ function App() {
   }
 
   function handleRestart() {
-    setBoard(initialBoard)
+    setBoard(INITIAL_BOARD)
     setSelectedCrab(null)
     setWinner(null)
     setCurrentPlayer(getRandomPlayer())
@@ -238,51 +134,15 @@ function App() {
         Начать заново
       </button>
 
-      <div className="board">
-        {board.map((row, rowIndex) =>
-          row.map((cell, columnIndex) => {
-            const isSelected =
-              selectedCrab?.row === rowIndex &&
-              selectedCrab?.column === columnIndex
-
-            return (
-              <div className="cell" key={`${rowIndex}-${columnIndex}`}>
-                {cell && (
-                  <button
-                    className={`crab crab--${cell} ${
-                      isSelected ? 'crab--selected' : ''
-                    }`}
-                    type="button"
-                    disabled={
-                      winner !== null ||
-                      isDraw ||
-                      cell !== currentPlayer
-                    }
-                    aria-label={`${cell} crab`}
-                    onClick={() =>
-                      handleCrabClick(rowIndex, columnIndex, cell)
-                    }
-                  />
-                )}
-
-                {isSelected &&
-                  availableMoves.map((move) => (
-                    <button
-                      className={`move-arrow move-arrow--${move.name}`}
-                      type="button"
-                      key={move.name}
-                      aria-label={`Move ${move.name}`}
-                      onClick={() => handleMove(move)}
-                      disabled={winner !== null || cell !== currentPlayer}
-                    >
-                      {move.symbol}
-                    </button>
-                  ))}
-              </div>
-            )
-          }),
-        )}
-      </div>
+      <Board
+        board={board}
+        currentPlayer={currentPlayer}
+        selectedCrab={selectedCrab}
+        availableMoves={availableMoves}
+        isGameOver={winner !== null || isDraw}
+        onCrabClick={handleCrabClick}
+        onMove={handleMove}
+      />
     </main>
   )
 }
