@@ -112,22 +112,83 @@
   font-size: 20px;
   font-weight: 700;
 }
-.restart-button {
-  padding: 10px 18px;
+.skip-message {
+  margin: -12px 0 0;
+  color: #9b3f27;
+  font-weight: 700;
+}
+.connection {
+  margin: -16px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.connection--connecting {
+  color: #8a681b;
+}
+
+.connection--connected {
+  color: #26733c;
+}
+
+.connection--disconnected,
+.connection--error {
+  color: #a33128;
+}
+.lobby {
+  width: min(90vw, 360px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  border: 3px solid #62442b;
+  border-radius: 12px;
+  background-color: #d7aa68;
+}
+
+.lobby h2,
+.lobby p {
+  margin: 0;
+}
+
+.join-form {
+  width: 100%;
+  display: flex;
+  gap: 8px;
+}
+
+.join-form input {
+  min-width: 0;
+  flex: 1;
+  padding: 10px;
   border: 2px solid #62442b;
   border-radius: 8px;
-  color: #2f241c;
+  font: inherit;
+  text-transform: uppercase;
+}
+
+.lobby-button {
+  padding: 10px 16px;
+  border: 2px solid #62442b;
+  border-radius: 8px;
   background-color: #ffe084;
   font: inherit;
   font-weight: 700;
   cursor: pointer;
 }
 
-.restart-button:hover {
-  background-color: #ffd34f;
+.lobby-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
-.skip-message {
-  margin: -12px 0 0;
-  color: #9b3f27;
+
+.room-code {
+  font-size: 32px;
+  letter-spacing: 6px;
+}
+
+.lobby-error {
+  color: #a33128;
   font-weight: 700;
 }

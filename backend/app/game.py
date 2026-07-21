@@ -1,0 +1,199 @@
+import secrets
+from dataclasses import dataclass, field
+
+
+BOARD_SIZE = 6
+WINNING_LINE_LENGTH = 4
+
+DIRECTIONS = {
+    'up': (-1, 0),
+    'right': (0, 1),
+    'down': (1, 0),
+    'left': (0, -1),
+}
+
+
+def create_initial_board() -> list[list[str | None]]:
+    return [
+        ['blue', None, 'red', 'blue', None, 'red'],
+        [None, None, None, None, None, None],
+        ['red', None, None, None, None, 'blue'],
+        ['blue', None, None, None, None, 'red'],
+        [None, None, None, None, None, None],
+        ['red', None, 'blue', 'red', None, 'blue'],
+    ]
+
+
+def is_inside_board(row: int, column: int) -> bool:
+    return (
+        0 <= row < BOARD_SIZE
+        and 0 <= column < BOARD_SIZE
+    )
+
+
+def get_move_target(
+    board: list[list[str | None]],
+    start_row: int,
+    start_column: int,
+    direction: str,
+) -> tuple[int, int] | None:
+    steps = DIRECTIONS.get(direction)
+
+    if steps is None:
+        return None
+
+    row_step, column_step = steps
+    row = start_row + row_step
+    column = start_column + column_step
+    target = None
+
+    while (
+        is_inside_board(row, column)
+        and board[row][column] is None
+    ):
+        target = (row, column)
+        row += row_step
+        column += column_step
+
+    return target
+
+
+def has_winning_line(
+    board: list[list[str | None]],
+    color: str,
+) -> bool:
+    for row in range(BOARD_SIZE):
+        consecutive_crabs = 0
+
+        for column in range(BOARD_SIZE):
+            if board[row][column] == color:
+                consecutive_crabs += 1
+
+                if consecutive_crabs >= WINNING_LINE_LENGTH:
+                    return True
+            else:
+                consecutive_crabs = 0
+
+    for column in range(BOARD_SIZE):
+        consecutive_crabs = 0
+
+        for row in range(BOARD_SIZE):
+            if board[row][column] == color:
+                consecutive_crabs += 1
+
+                if consecutive_crabs >= WINNING_LINE_LENGTH:
+                    return True
+            else:
+                consecutive_crabs = 0
+
+    return False
+
+
+def has_any_available_move(
+    board: list[list[str | None]],
+    color: str,
+) -> bool:
+    for row in range(BOARD_SIZE):
+        for column in range(BOARD_SIZE):
+            if board[row][column] != color:
+                continue
+
+            for direction in DIRECTIONS:
+                target = get_move_target(
+                    board,
+                    row,
+                    column,
+                    direction,
+                )
+
+                if target is not None:
+                    return True
+
+    return False
+
+
+@dataclass
+class Game:
+    board: list[list[str | None]] = field(
+        default_factory=create_initial_board
+    )
+    current_player: str | None = None
+    winner: str | None = None
+    is_draw: bool = False
+    consecutive_player: str | None = None
+    consecutive_moves: int = 0
+
+    def start(self):
+        self.current_player = secrets.choice(
+            ('blue', 'red')
+        )
+
+    def make_move(
+        self,
+        player_color: str,
+        row: int,
+        column: int,
+        direction: str,
+    ) -> str | None:
+        if self.current_player is None:
+            raise ValueError('Игра ещё не началась')
+
+        if self.winner is not None or self.is_draw:
+            raise ValueError('Игра уже завершена')
+
+        if player_color != self.current_player:
+            raise ValueError('Сейчас ход другого игрока')
+
+        if not is_inside_board(row, column):
+            raise ValueError('Клетка находится вне поля')
+
+        if self.board[row][column] != player_color:
+            raise ValueError('Нельзя переместить этого краба')
+
+        target = get_move_target(
+            self.board,
+            row,
+            column,
+            direction,
+        )
+
+        if target is None:
+            raise ValueError('Краб не может идти в эту сторону')
+
+        target_row, target_column = target
+
+        self.board[row][column] = None
+        self.board[target_row][target_column] = player_color
+
+        if has_winning_line(self.board, player_color):
+            self.winner = player_color
+            return None
+
+        if self.consecutive_player == player_color:
+            self.consecutive_moves += 1
+        else:
+            self.consecutive_player = player_color
+            self.consecutive_moves = 1
+
+        if self.consecutive_moves >= 5:
+            self.is_draw = True
+            return None
+
+        next_player = (
+            'red' if player_color == 'blue' else 'blue'
+        )
+
+        if has_any_available_move(self.board, next_player):
+            self.current_player = next_player
+            return None
+
+        self.current_player = player_color
+        return next_player
+
+    def to_message(self) -> dict:
+        return {
+            'board': self.board,
+            'currentPlayer': self.current_player,
+            'winner': self.winner,
+            'isDraw': self.is_draw,
+        }
