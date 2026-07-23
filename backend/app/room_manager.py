@@ -15,7 +15,9 @@ ROOM_CODE_ALPHABET = string.ascii_uppercase + string.digits
 class Room:
     code: str
     blue_player: WebSocket
+    blue_nickname: str
     red_player: WebSocket | None = None
+    red_nickname: str | None = None
     game: Game = field(default_factory=Game)
 
 
@@ -23,12 +25,17 @@ class RoomManager:
     def __init__(self):
         self.rooms: dict[str, Room] = {}
 
-    def create_room(self, websocket: WebSocket) -> Room:
+    def create_room(
+        self,
+        websocket: WebSocket,
+        nickname: str,
+    ) -> Room:
         room_code = self._generate_room_code()
 
         room = Room(
             code=room_code,
             blue_player=websocket,
+            blue_nickname=nickname,
         )
 
         self.rooms[room_code] = room
@@ -38,6 +45,7 @@ class RoomManager:
         self,
         room_code: str,
         websocket: WebSocket,
+        nickname: str,
     ) -> Room:
         normalized_code = room_code.strip().upper()
         room = self.rooms.get(normalized_code)
@@ -49,6 +57,7 @@ class RoomManager:
             raise ValueError('Комната уже заполнена')
 
         room.red_player = websocket
+        room.red_nickname = nickname
         room.game.start()
 
         return room

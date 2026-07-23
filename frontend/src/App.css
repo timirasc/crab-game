@@ -286,3 +286,132 @@
   color: #a33128;
   font-weight: 700;
 }
+
+
+/* Экран ввода никнейма */
+
+.nickname-form {
+  width: min(90vw, 360px);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  padding: 24px;
+  border: 3px solid #62442b;
+  border-radius: 12px;
+
+  background-color: #d7aa68;
+}
+
+.nickname-form h2 {
+  margin: 0;
+  text-align: center;
+}
+
+.nickname-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nickname-form input {
+  width: 100%;
+  padding: 12px;
+
+  border: 2px solid #62442b;
+  border-radius: 8px;
+
+  font: inherit;
+}
+
+.nickname-form button {
+  padding: 12px;
+
+  border: 2px solid #62442b;
+  border-radius: 8px;
+
+  background-color: #ffe084;
+
+  font: inherit;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.nickname-form button:hover {
+  background-color: #ffd34f;
+}
+
+.nickname-form__error {
+  color: #a33128;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Стили отображения игроков */
+
+.players {
+  width: min(90vw, 420px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.player {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 12px;
+  border: 3px solid transparent;
+  border-radius: 10px;
+
+  background-color: rgb(255 255 255 / 55%);
+
+  transition:
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+
+.player--active {
+  border-color: #62442b;
+  transform: translateY(-3px);
+}
+
+.player__color {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+
+  border: 2px solid rgb(0 0 0 / 25%);
+  border-radius: 50%;
+}
+
+.player--blue .player__color {
+  background-color: #42b8c5;
+}
+
+.player--red .player__color {
+  background-color: #e8663f;
+}
+
+.player__nickname {
+  min-width: 0;
+  overflow: hidden;
+
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.player__you {
+  margin-left: auto;
+  padding: 2px 6px;
+  border-radius: 5px;
+
+  background-color: #ffe084;
+
+  font-size: 12px;
+  font-weight: 700;
+}

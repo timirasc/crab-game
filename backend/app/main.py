@@ -7,6 +7,42 @@ app = FastAPI(title='Crab Game API')
 room_manager = RoomManager()
 
 
+def validate_nickname(value) -> str:
+    if not isinstance(value, str):
+        raise ValueError('Никнейм не указан')
+
+    nickname = value.strip()
+
+    if len(nickname) < 2:
+        raise ValueError(
+            'Никнейм должен содержать минимум 2 символа'
+        )
+
+    if len(nickname) > 20:
+        raise ValueError(
+            'Никнейм должен содержать максимум 20 символов'
+        )
+
+    if not nickname.isprintable():
+        raise ValueError(
+            'Никнейм содержит недопустимые символы'
+        )
+
+    return nickname
+
+
+async def send_error(
+    websocket: WebSocket,
+    message: str,
+):
+    await websocket.send_json(
+        {
+            'type': 'error',
+            'message': message,
+        }
+    )
+
+
 @app.get('/health')
 async def health_check():
     return {'status': 'ok'}
@@ -35,7 +71,18 @@ async def websocket_endpoint(websocket: WebSocket):
                     )
                     continue
 
-                room = room_manager.create_room(websocket)
+                try:
+                    nickname = validate_nickname(
+                        message.get('nickname')
+                    )
+                except ValueError as error:
+                    await send_error(websocket, str(error))
+                    continue
+
+                room = room_manager.create_room(
+                    websocket,
+                    nickname,
+                )
 
                 await websocket.send_json(
                     {
@@ -53,12 +100,24 @@ async def websocket_endpoint(websocket: WebSocket):
                     )
                     continue
 
-                room_code = message.get('roomCode', '')
+                room_code = message.get('roomCode')
+
+                if not isinstance(room_code, str):
+                    await send_error(
+                        websocket,
+                        'Некорректный код комнаты',
+                    )
+                    continue
 
                 try:
+                    nickname = validate_nickname(
+                        message.get('nickname')
+                    )
+
                     room = room_manager.join_room(
                         room_code,
                         websocket,
+                        nickname,
                     )
                 except ValueError as error:
                     await send_error(websocket, str(error))
@@ -66,11 +125,17 @@ async def websocket_endpoint(websocket: WebSocket):
 
                 game_state = room.game.to_message()
 
+                players = {
+                    'blue': room.blue_nickname,
+                    'red': room.red_nickname,
+                }
+
                 await room.blue_player.send_json(
                     {
                         'type': 'game_started',
                         'roomCode': room.code,
                         'color': 'blue',
+                        'players': players,
                         **game_state,
                     }
                 )
@@ -80,6 +145,7 @@ async def websocket_endpoint(websocket: WebSocket):
                         'type': 'game_started',
                         'roomCode': room.code,
                         'color': 'red',
+                        'players': players,
                         **game_state,
                     }
                 )
@@ -139,15 +205,3 @@ async def websocket_endpoint(websocket: WebSocket):
 
     except WebSocketDisconnect:
         await room_manager.remove_player(websocket)
-
-
-async def send_error(
-    websocket: WebSocket,
-    message: str,
-):
-    await websocket.send_json(
-        {
-            'type': 'error',
-            'message': message,
-        }
-    )

@@ -8,8 +8,23 @@ import { getAvailableMoves } from './game/gameLogic'
 import Board from './components/Board/Board'
 import { useGameSocket } from './hooks/useGameSocket'
 import Lobby from './components/Lobby/Lobby'
+import NicknameForm from './components/NicknameForm/NicknameForm'
 
 
+
+
+const NICKNAME_STORAGE_KEY = 'crab-game-nickname'
+
+function getStoredNickname() {
+  const nickname =
+    localStorage.getItem(NICKNAME_STORAGE_KEY)?.trim() ?? ''
+
+  if (nickname.length < 2 || nickname.length > 20) {
+    return ''
+  }
+
+  return nickname
+}
 
 const connectionLabels = {
   connecting: 'Подключение…',
@@ -30,9 +45,14 @@ function App() {
   const [playerColor, setPlayerColor] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
   const [isMovePending, setIsMovePending] = useState(false)
+  const [nickname, setNickname] = useState(getStoredNickname)
+  const [players, setPlayers] = useState({
+    blue: '',
+    red: '',
+  })
   
 
-
+  
   const handleServerMessage = useCallback((message) => {
     if (message.type === 'room_created') {
       setRoomCode(message.roomCode)
@@ -44,6 +64,7 @@ function App() {
     if (message.type === 'game_started') {
       setRoomCode(message.roomCode)
       setPlayerColor(message.color)
+      setPlayers(message.players)
       setBoard(message.board)
       setCurrentPlayer(message.currentPlayer)
       setWinner(message.winner)
@@ -75,6 +96,10 @@ function App() {
       setGamePhase('lobby')
       setRoomCode('')
       setPlayerColor(null)
+      setPlayers({
+        blue: '',
+        red: '',
+      })
       setSelectedCrab(null)
       setIsMovePending(false)
       setErrorMessage('Соперник отключился')
@@ -95,11 +120,21 @@ function App() {
     )
   : []
 
+  function handleNicknameSubmit(newNickname) {
+    localStorage.setItem(
+      NICKNAME_STORAGE_KEY,
+      newNickname,
+    )
+
+    setNickname(newNickname)
+  }
+
   function handleCreateRoom() {
     setErrorMessage('')
 
     const wasSent = sendMessage({
       type: 'create_room',
+      nickname,
     })
 
     if (!wasSent) {
@@ -113,6 +148,7 @@ function App() {
     const wasSent = sendMessage({
       type: 'join_room',
       roomCode: code,
+      nickname,
     })
 
     if (!wasSent) {
@@ -164,7 +200,17 @@ function App() {
 }
 
 
+  if (!nickname) {
+    return (
+      <main className="game">
+        <h1>Crab Game</h1>
 
+        <NicknameForm
+          onSubmit={handleNicknameSubmit}
+        />
+      </main>
+    )
+  }
 
   if (gamePhase !== 'playing') {
     return (
@@ -190,9 +236,39 @@ function App() {
   return (
     <main className="game">
       <h1>Crab Game</h1>
-      <p>
-        Ваш цвет: {playerColor === 'blue' ? 'синий' : 'красный'}
-      </p>
+      <div className="players">
+        <div
+          className={`player player--blue ${
+            currentPlayer === 'blue' ? 'player--active' : ''
+          }`}
+        >
+          <span className="player__color" />
+
+          <span className="player__nickname">
+            {players.blue}
+          </span>
+
+          {playerColor === 'blue' && (
+            <span className="player__you">Вы</span>
+          )}
+        </div>
+
+        <div
+          className={`player player--red ${
+            currentPlayer === 'red' ? 'player--active' : ''
+          }`}
+        >
+        <span className="player__color" />
+
+        <span className="player__nickname">
+          {players.red}
+        </span>
+
+        {playerColor === 'red' && (
+          <span className="player__you">Вы</span>
+        )}
+      </div>
+    </div>
       <p className={`connection connection--${connectionStatus}`}>
         {connectionLabels[connectionStatus]}
       </p>
