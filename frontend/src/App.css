@@ -5,35 +5,80 @@
   align-items: center;
   justify-content: center;
   gap: 24px;
+  padding: 24px;
 }
 
-.game h1 {
+.game h1,
+.game p {
   margin: 0;
 }
 
+/* Игровая доска */
+
 .board {
-  width: min(90vw, 600px);
+  position: relative;
+  width: 100%;
   aspect-ratio: 1;
+  flex-shrink: 0;
+
+  background-color: transparent;
+  background-image: url('/images/board-square.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+
+  transform: rotateX(45deg);
+  transform-origin: center bottom;
+  transform-style: preserve-3d;
+  top: -15vw;
+}
+
+.board-scene {
+  width: min(100vw, 700px);
+  aspect-ratio: 1;
+  perspective: min(120vw, 750px);
+  perspective-origin: center 25%;
+}
+
+.board-grid {
+  position: absolute;
+  top: 4.2%;
+  right: 4.2%;
+  bottom: 6.8%;
+  left: 4.2%;
+
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   grid-template-rows: repeat(6, minmax(0, 1fr));
-  border: 4px solid #62442b;
-  background-color: #d7aa68;
 }
 
 .cell {
   position: relative;
+  min-width: 0;
+  min-height: 0;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgb(98 68 43 / 45%);
+
+  border: 0;
+  background-color: transparent;
 }
+
+/* Крабы */
 
 .crab {
   width: 65%;
   aspect-ratio: 1;
+  padding: 0;
+
   border: 3px solid rgb(0 0 0 / 25%);
   border-radius: 50%;
+
+  cursor: pointer;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease;
 }
 
 .crab--blue {
@@ -42,13 +87,6 @@
 
 .crab--red {
   background-color: #e8663f;
-}
-.crab {
-  padding: 0;
-  cursor: pointer;
-  transition:
-    transform 150ms ease,
-    box-shadow 150ms ease;
 }
 
 .crab:hover:not(:disabled) {
@@ -65,60 +103,87 @@
     0 0 0 5px #fff,
     0 0 0 9px #2f241c;
 }
+
+/* Стрелки движения */
+
 .move-arrow {
   position: absolute;
   z-index: 2;
-  width: 26px;
-  height: 26px;
-  padding: 0;
-  border: 2px solid #2f241c;
-  border-radius: 50%;
-  color: #2f241c;
-  background-color: #fff;
-  font-size: 18px;
-  line-height: 1;
-  cursor: pointer;
-}
 
-.move-arrow:hover {
-  background-color: #ffe084;
+  width: min(46px, 7.5vw);
+  height: min(46px, 7.5vw);
+  padding: 0;
+
+  border: none;
+
+  color: #2f241c;
+  background-color: transparent;
+
+  cursor: pointer;
+
+  background-color: transparent;
+  background-image: url(/images/arrow.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+
+  transition: 0.15s;
 }
 
 .move-arrow--up {
-  top: 2px;
+  top:  clamp(-8vw, -43px, -50px);
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(-15%);
+}
+.move-arrow--up:hover {
+  transform: translateX(-50%) translateY(-35%) scale(1.2);
 }
 
 .move-arrow--right {
   top: 50%;
-  right: 2px;
-  transform: translateY(-50%);
+  right: clamp(-8vw, -43px, -50px);
+  transform: translateX(15%) translateY(-50%) rotate(90deg);
+}
+.move-arrow--right:hover {
+  transform: translateX(35%) translateY(-50%) rotate(90deg) scale(1.2);
 }
 
 .move-arrow--down {
-  bottom: 2px;
+  bottom: clamp(-8vw, -43px, -50px);
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) rotate(180deg) translateY(-30%);
+}
+.move-arrow--down:hover {
+  transform: translateX(-50%) rotate(180deg) translateY(-45%) scale(1.2);
 }
 
 .move-arrow--left {
   top: 50%;
-  left: 2px;
-  transform: translateY(-50%);
+  left: clamp(-8vw, -43px, -50px);
+  transform: translateX(-15%) translateY(-50%) rotate(-90deg);
 }
+.move-arrow--left:hover {
+  transform: translateX(-35%) translateY(-50%) rotate(-90deg) scale(1.2);
+}
+
+/* Состояние матча */
+
 .current-player {
-  margin: -12px 0 0;
+  margin-top: -12px;
   font-size: 20px;
   font-weight: 700;
 }
+
 .skip-message {
-  margin: -12px 0 0;
+  margin-top: -12px;
   color: #9b3f27;
   font-weight: 700;
 }
+
+/* Состояние соединения */
+
 .connection {
-  margin: -16px 0 0;
+  margin-top: -16px;
   font-size: 14px;
   font-weight: 700;
 }
@@ -135,15 +200,20 @@
 .connection--error {
   color: #a33128;
 }
+
+/* Экран комнаты */
+
 .lobby {
   width: min(90vw, 360px);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
+
   padding: 24px;
   border: 3px solid #62442b;
   border-radius: 12px;
+
   background-color: #d7aa68;
 }
 
@@ -161,9 +231,11 @@
 .join-form input {
   min-width: 0;
   flex: 1;
+
   padding: 10px;
   border: 2px solid #62442b;
   border-radius: 8px;
+
   font: inherit;
   text-transform: uppercase;
 }
@@ -172,9 +244,12 @@
   padding: 10px 16px;
   border: 2px solid #62442b;
   border-radius: 8px;
+
   background-color: #ffe084;
+
   font: inherit;
   font-weight: 700;
+
   cursor: pointer;
 }
 
