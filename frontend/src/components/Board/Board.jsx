@@ -1,3 +1,5 @@
+import { BOARD_SIZE } from '../../game/constants'
+
 function Board({
   board,
   currentPlayer,
@@ -7,13 +9,27 @@ function Board({
   onCrabClick,
   onMove,
 }) {
+  const crabs = board.flatMap((row, rowIndex) =>
+    row.flatMap((crab, columnIndex) => {
+      if (crab === null) return []
+
+      return [
+        {
+          ...crab,
+          row: rowIndex,
+          column: columnIndex,
+        },
+      ]
+    }),
+  )
+
   return (
     <div className="board-scene">
       <div className="board">
         <div className="board-grid">
           {board.map((row, rowIndex) =>
-            row.map((cell, columnIndex) => {
-              const isSelected =
+            row.map((_, columnIndex) => {
+              const isSelectedCell =
                 selectedCrab?.row === rowIndex &&
                 selectedCrab?.column === columnIndex
 
@@ -22,27 +38,7 @@ function Board({
                   className="cell"
                   key={`${rowIndex}-${columnIndex}`}
                 >
-                  {cell && (
-                    <button
-                      className={`crab crab--${cell} ${
-                        isSelected ? 'crab--selected' : ''
-                      }`}
-                      type="button"
-                      disabled={
-                        isGameOver || cell !== currentPlayer
-                      }
-                      aria-label={`${cell} crab`}
-                      onClick={() =>
-                        onCrabClick(
-                          rowIndex,
-                          columnIndex,
-                          cell,
-                        )
-                      }
-                    />
-                  )}
-
-                  {isSelected &&
+                  {isSelectedCell &&
                     availableMoves.map((move) => (
                       <button
                         className={
@@ -59,6 +55,45 @@ function Board({
               )
             }),
           )}
+
+          <div className="crab-layer">
+            {crabs.map((crab) => {
+              const isSelected =
+                selectedCrab?.id === crab.id
+
+              const left =
+                ((crab.column + 0.5) / BOARD_SIZE) * 100
+
+              const top =
+                ((crab.row + 0.5) / BOARD_SIZE) * 100
+
+              return (
+                <button
+                  className={`crab crab--${crab.color} ${
+                    isSelected ? 'crab--selected' : ''
+                  }`}
+                  style={{
+                    left: `${left}%`,
+                    top: `${top}%`,
+                  }}
+                  type="button"
+                  key={crab.id}
+                  disabled={
+                    isGameOver ||
+                    crab.color !== currentPlayer
+                  }
+                  aria-label={`${crab.color} crab`}
+                  onClick={() =>
+                    onCrabClick(
+                      crab.row,
+                      crab.column,
+                      crab,
+                    )
+                  }
+                />
+              )
+            })}
+          </div>
         </div>
       </div>
     </div>

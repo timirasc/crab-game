@@ -2,10 +2,18 @@ import unittest
 
 from app.game import (
     Game,
+    create_crab,
     create_initial_board,
     get_move_target,
     has_winning_line,
 )
+
+
+def create_empty_board():
+    return [
+        [None, None, None, None, None, None]
+        for _ in range(6)
+    ]
 
 
 class MoveTargetTests(unittest.TestCase):
@@ -48,40 +56,41 @@ class MoveTargetTests(unittest.TestCase):
 
 class WinningLineTests(unittest.TestCase):
     def test_four_horizontal_crabs_win(self):
-        board = [
-            ['blue', 'blue', 'blue', 'blue', None, None],
-            [None, None, None, None, None, None],
-            [None, None, None, None, None, None],
-            [None, None, None, None, None, None],
-            [None, None, None, None, None, None],
-            [None, None, None, None, None, None],
-        ]
+        board = create_empty_board()
 
-        self.assertTrue(has_winning_line(board, 'blue'))
+        board[0][0] = create_crab('blue-1', 'blue')
+        board[0][1] = create_crab('blue-2', 'blue')
+        board[0][2] = create_crab('blue-3', 'blue')
+        board[0][3] = create_crab('blue-4', 'blue')
+
+        self.assertTrue(
+            has_winning_line(board, 'blue')
+        )
 
     def test_five_vertical_crabs_win(self):
-        board = [
-            ['red', None, None, None, None, None],
-            ['red', None, None, None, None, None],
-            ['red', None, None, None, None, None],
-            ['red', None, None, None, None, None],
-            ['red', None, None, None, None, None],
-            [None, None, None, None, None, None],
-        ]
+        board = create_empty_board()
 
-        self.assertTrue(has_winning_line(board, 'red'))
+        for row in range(5):
+            board[row][0] = create_crab(
+                f'red-{row + 1}',
+                'red',
+            )
+
+        self.assertTrue(
+            has_winning_line(board, 'red')
+        )
 
     def test_interrupted_line_does_not_win(self):
-        board = [
-            ['blue', 'blue', None, 'blue', 'blue', None],
-            [None, None, None, None, None, None],
-            [None, None, None, None, None, None],
-            [None, None, None, None, None, None],
-            [None, None, None, None, None, None],
-            [None, None, None, None, None, None],
-        ]
+        board = create_empty_board()
 
-        self.assertFalse(has_winning_line(board, 'blue'))
+        board[0][0] = create_crab('blue-1', 'blue')
+        board[0][1] = create_crab('blue-2', 'blue')
+        board[0][3] = create_crab('blue-3', 'blue')
+        board[0][4] = create_crab('blue-4', 'blue')
+
+        self.assertFalse(
+            has_winning_line(board, 'blue')
+        )
 
 
 class GameTests(unittest.TestCase):
@@ -96,8 +105,12 @@ class GameTests(unittest.TestCase):
             direction='down',
         )
 
+        moved_crab = game.board[1][0]
+
         self.assertIsNone(game.board[0][0])
-        self.assertEqual(game.board[1][0], 'blue')
+        self.assertIsNotNone(moved_crab)
+        self.assertEqual(moved_crab['id'], 'blue-1')
+        self.assertEqual(moved_crab['color'], 'blue')
         self.assertEqual(game.current_player, 'red')
 
     def test_player_cannot_move_during_opponent_turn(self):
@@ -116,15 +129,15 @@ class GameTests(unittest.TestCase):
             )
 
     def test_winning_move_sets_winner(self):
+        board = create_empty_board()
+
+        board[0][0] = create_crab('blue-1', 'blue')
+        board[0][1] = create_crab('blue-2', 'blue')
+        board[0][2] = create_crab('blue-3', 'blue')
+        board[1][3] = create_crab('blue-4', 'blue')
+
         game = Game(
-            board=[
-                ['blue', 'blue', 'blue', None, None, None],
-                [None, None, None, 'blue', None, None],
-                [None, None, None, None, None, None],
-                [None, None, None, None, None, None],
-                [None, None, None, None, None, None],
-                [None, None, None, None, None, None],
-            ],
+            board=board,
             current_player='blue',
         )
 
@@ -136,6 +149,10 @@ class GameTests(unittest.TestCase):
         )
 
         self.assertEqual(game.winner, 'blue')
+        self.assertEqual(
+            game.board[0][3]['id'],
+            'blue-4',
+        )
 
     def test_fifth_consecutive_move_causes_draw(self):
         game = Game(
@@ -152,6 +169,24 @@ class GameTests(unittest.TestCase):
         )
 
         self.assertTrue(game.is_draw)
+
+    def test_crab_keeps_id_after_move(self):
+        game = Game()
+        game.current_player = 'blue'
+
+        original_crab = game.board[0][0]
+
+        game.make_move(
+            player_color='blue',
+            row=0,
+            column=0,
+            direction='down',
+        )
+
+        moved_crab = game.board[1][0]
+
+        self.assertIs(moved_crab, original_crab)
+        self.assertEqual(moved_crab['id'], 'blue-1')
 
 
 if __name__ == '__main__':

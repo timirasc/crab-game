@@ -5,6 +5,9 @@ from dataclasses import dataclass, field
 BOARD_SIZE = 6
 WINNING_LINE_LENGTH = 4
 
+Crab = dict[str, str]
+Board = list[list[Crab | None]]
+
 DIRECTIONS = {
     'up': (-1, 0),
     'right': (0, 1),
@@ -13,14 +16,63 @@ DIRECTIONS = {
 }
 
 
-def create_initial_board() -> list[list[str | None]]:
+def create_crab(crab_id: str, color: str) -> Crab:
+    return {
+        'id': crab_id,
+        'color': color,
+    }
+
+
+def create_initial_board() -> Board:
     return [
-        ['blue', None, 'red', 'blue', None, 'red'],
-        [None, None, None, None, None, None],
-        ['red', None, None, None, None, 'blue'],
-        ['blue', None, None, None, None, 'red'],
-        [None, None, None, None, None, None],
-        ['red', None, 'blue', 'red', None, 'blue'],
+        [
+            create_crab('blue-1', 'blue'),
+            None,
+            create_crab('red-1', 'red'),
+            create_crab('blue-2', 'blue'),
+            None,
+            create_crab('red-2', 'red'),
+        ],
+        [
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+        ],
+        [
+            create_crab('red-3', 'red'),
+            None,
+            None,
+            None,
+            None,
+            create_crab('blue-3', 'blue'),
+        ],
+        [
+            create_crab('blue-4', 'blue'),
+            None,
+            None,
+            None,
+            None,
+            create_crab('red-4', 'red'),
+        ],
+        [
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+        ],
+        [
+            create_crab('red-5', 'red'),
+            None,
+            create_crab('blue-5', 'blue'),
+            create_crab('red-6', 'red'),
+            None,
+            create_crab('blue-6', 'blue'),
+        ],
     ]
 
 
@@ -32,7 +84,7 @@ def is_inside_board(row: int, column: int) -> bool:
 
 
 def get_move_target(
-    board: list[list[str | None]],
+    board: Board,
     start_row: int,
     start_column: int,
     direction: str,
@@ -59,14 +111,19 @@ def get_move_target(
 
 
 def has_winning_line(
-    board: list[list[str | None]],
+    board: Board,
     color: str,
 ) -> bool:
     for row in range(BOARD_SIZE):
         consecutive_crabs = 0
 
         for column in range(BOARD_SIZE):
-            if board[row][column] == color:
+            crab = board[row][column]
+
+            if (
+                crab is not None
+                and crab['color'] == color
+            ):
                 consecutive_crabs += 1
 
                 if consecutive_crabs >= WINNING_LINE_LENGTH:
@@ -78,7 +135,12 @@ def has_winning_line(
         consecutive_crabs = 0
 
         for row in range(BOARD_SIZE):
-            if board[row][column] == color:
+            crab = board[row][column]
+
+            if (
+                crab is not None
+                and crab['color'] == color
+            ):
                 consecutive_crabs += 1
 
                 if consecutive_crabs >= WINNING_LINE_LENGTH:
@@ -90,12 +152,17 @@ def has_winning_line(
 
 
 def has_any_available_move(
-    board: list[list[str | None]],
+    board: Board,
     color: str,
 ) -> bool:
     for row in range(BOARD_SIZE):
         for column in range(BOARD_SIZE):
-            if board[row][column] != color:
+            crab = board[row][column]
+
+            if (
+                crab is None
+                or crab['color'] != color
+            ):
                 continue
 
             for direction in DIRECTIONS:
@@ -114,7 +181,7 @@ def has_any_available_move(
 
 @dataclass
 class Game:
-    board: list[list[str | None]] = field(
+    board: Board = field(
         default_factory=create_initial_board
     )
     current_player: str | None = None
@@ -147,7 +214,12 @@ class Game:
         if not is_inside_board(row, column):
             raise ValueError('Клетка находится вне поля')
 
-        if self.board[row][column] != player_color:
+        crab = self.board[row][column]
+
+        if (
+            crab is None
+            or crab['color'] != player_color
+        ):
             raise ValueError('Нельзя переместить этого краба')
 
         target = get_move_target(
@@ -158,12 +230,14 @@ class Game:
         )
 
         if target is None:
-            raise ValueError('Краб не может идти в эту сторону')
+            raise ValueError(
+                'Краб не может идти в эту сторону'
+            )
 
         target_row, target_column = target
 
         self.board[row][column] = None
-        self.board[target_row][target_column] = player_color
+        self.board[target_row][target_column] = crab
 
         if has_winning_line(self.board, player_color):
             self.winner = player_color
@@ -183,7 +257,10 @@ class Game:
             'red' if player_color == 'blue' else 'blue'
         )
 
-        if has_any_available_move(self.board, next_player):
+        if has_any_available_move(
+            self.board,
+            next_player,
+        ):
             self.current_player = next_player
             return None
 

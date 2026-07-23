@@ -120,20 +120,19 @@ function App() {
     }
   }
 
-  function handleCrabClick(rowIndex, columnIndex, color) {
+  function handleCrabClick(rowIndex, columnIndex, crab) {
     if (
       winner ||
       isDraw ||
       isMovePending ||
       playerColor !== currentPlayer ||
-      color !== playerColor
+      crab.color !== playerColor
     ) {
       return
     }
 
     const isAlreadySelected =
-      selectedCrab?.row === rowIndex &&
-      selectedCrab?.column === columnIndex
+      selectedCrab?.id === crab.id
 
     if (isAlreadySelected) {
       setSelectedCrab(null)
@@ -141,6 +140,7 @@ function App() {
     }
 
     setSelectedCrab({
+      id: crab.id,
       row: rowIndex,
       column: columnIndex,
     })
