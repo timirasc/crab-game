@@ -9,21 +9,39 @@ import Board from './components/Board/Board'
 import { useGameSocket } from './hooks/useGameSocket'
 import Lobby from './components/Lobby/Lobby'
 import NicknameForm from './components/NicknameForm/NicknameForm'
+import { isValidAvatarId } from './data/avatars'
+import Avatar from './components/Avatar/Avatar'
 
 
 
+const PROFILE_STORAGE_KEY = 'crab-game-profile'
 
-const NICKNAME_STORAGE_KEY = 'crab-game-nickname'
+function getStoredProfile() {
+  try {
+    const savedProfile = localStorage.getItem(
+      PROFILE_STORAGE_KEY,
+    )
 
-function getStoredNickname() {
-  const nickname =
-    localStorage.getItem(NICKNAME_STORAGE_KEY)?.trim() ?? ''
+    if (!savedProfile) return null
 
-  if (nickname.length < 2 || nickname.length > 20) {
-    return ''
+    const profile = JSON.parse(savedProfile)
+
+    if (
+      typeof profile?.nickname !== 'string' ||
+      profile.nickname.trim().length < 2 ||
+      profile.nickname.trim().length > 20 ||
+      !isValidAvatarId(profile.avatarId)
+    ) {
+      return null
+    }
+
+    return {
+      nickname: profile.nickname.trim(),
+      avatarId: profile.avatarId,
+    }
+  } catch {
+    return null
   }
-
-  return nickname
 }
 
 const connectionLabels = {
@@ -45,10 +63,10 @@ function App() {
   const [playerColor, setPlayerColor] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
   const [isMovePending, setIsMovePending] = useState(false)
-  const [nickname, setNickname] = useState(getStoredNickname)
+  const [profile, setProfile] = useState(getStoredProfile)
   const [players, setPlayers] = useState({
-    blue: '',
-    red: '',
+    blue: null,
+    red: null,
   })
   
 
@@ -97,8 +115,8 @@ function App() {
       setRoomCode('')
       setPlayerColor(null)
       setPlayers({
-        blue: '',
-        red: '',
+        blue: null,
+        red: null,
       })
       setSelectedCrab(null)
       setIsMovePending(false)
@@ -120,13 +138,14 @@ function App() {
     )
   : []
 
-  function handleNicknameSubmit(newNickname) {
+  function handleProfileSubmit(newProfile) {
     localStorage.setItem(
-      NICKNAME_STORAGE_KEY,
-      newNickname,
+      PROFILE_STORAGE_KEY,
+      JSON.stringify(newProfile),
     )
 
-    setNickname(newNickname)
+    localStorage.removeItem('crab-game-nickname')
+    setProfile(newProfile)
   }
 
   function handleCreateRoom() {
@@ -134,7 +153,8 @@ function App() {
 
     const wasSent = sendMessage({
       type: 'create_room',
-      nickname,
+      nickname: profile.nickname,
+      avatarId: profile.avatarId,
     })
 
     if (!wasSent) {
@@ -148,7 +168,8 @@ function App() {
     const wasSent = sendMessage({
       type: 'join_room',
       roomCode: code,
-      nickname,
+      nickname: profile.nickname,
+      avatarId: profile.avatarId,
     })
 
     if (!wasSent) {
@@ -200,13 +221,12 @@ function App() {
 }
 
 
-  if (!nickname) {
+  if (!profile) {
     return (
       <main className="game">
-        <h1>Crab Game</h1>
 
         <NicknameForm
-          onSubmit={handleNicknameSubmit}
+          onSubmit={handleProfileSubmit}
         />
       </main>
     )
@@ -215,7 +235,6 @@ function App() {
   if (gamePhase !== 'playing') {
     return (
       <main className="game">
-        <h1>Crab Game</h1>
 
         <p className={`connection connection--${connectionStatus}`}>
           {connectionLabels[connectionStatus]}
@@ -235,17 +254,19 @@ function App() {
 
   return (
     <main className="game">
-      <h1>Crab Game</h1>
       <div className="players">
         <div
           className={`player player--blue ${
             currentPlayer === 'blue' ? 'player--active' : ''
           }`}
         >
-          <span className="player__color" />
+          <Avatar
+            avatarId={players.blue?.avatarId}
+            className="player__avatar"
+          />
 
           <span className="player__nickname">
-            {players.blue}
+            {players.blue?.nickname}
           </span>
 
           {playerColor === 'blue' && (
@@ -258,10 +279,12 @@ function App() {
             currentPlayer === 'red' ? 'player--active' : ''
           }`}
         >
-        <span className="player__color" />
-
+        <Avatar
+          avatarId={players.red?.avatarId}
+          className="player__avatar"
+        />
         <span className="player__nickname">
-          {players.red}
+          {players.red?.nickname}
         </span>
 
         {playerColor === 'red' && (

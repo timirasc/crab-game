@@ -288,66 +288,6 @@
 }
 
 
-/* Экран ввода никнейма */
-
-.nickname-form {
-  width: min(90vw, 360px);
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-
-  padding: 24px;
-  border: 3px solid #62442b;
-  border-radius: 12px;
-
-  background-color: #d7aa68;
-}
-
-.nickname-form h2 {
-  margin: 0;
-  text-align: center;
-}
-
-.nickname-form form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.nickname-form input {
-  width: 100%;
-  padding: 12px;
-
-  border: 2px solid #62442b;
-  border-radius: 8px;
-
-  font: inherit;
-}
-
-.nickname-form button {
-  padding: 12px;
-
-  border: 2px solid #62442b;
-  border-radius: 8px;
-
-  background-color: #ffe084;
-
-  font: inherit;
-  font-weight: 700;
-
-  cursor: pointer;
-}
-
-.nickname-form button:hover {
-  background-color: #ffd34f;
-}
-
-.nickname-form__error {
-  color: #a33128;
-  font-weight: 700;
-  text-align: center;
-}
-
 /* Стили отображения игроков */
 
 .players {
@@ -379,23 +319,6 @@
   transform: translateY(-3px);
 }
 
-.player__color {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-
-  border: 2px solid rgb(0 0 0 / 25%);
-  border-radius: 50%;
-}
-
-.player--blue .player__color {
-  background-color: #42b8c5;
-}
-
-.player--red .player__color {
-  background-color: #e8663f;
-}
-
 .player__nickname {
   min-width: 0;
   overflow: hidden;
@@ -414,4 +337,196 @@
 
   font-size: 12px;
   font-weight: 700;
+}
+
+/* Стили отображения профиля */
+.player__avatar {
+  width: 52px;
+}
+
+.avatar {
+  display: block;
+  flex-shrink: 0;
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+.avatar {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+
+.nickname-form {
+  width: min(100vw, 820px);
+  padding: 70px 50px;
+
+  background-image: url(public/images/bg-lobby.png);
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-size: 100% 100%;
+}
+
+.nickname-form h2 {
+  font-family: 'RubikSprayPaint';
+  -webkit-text-stroke: 0.3px #E1BC81;
+  max-width: 600px;
+  margin: 0 auto 24px;
+
+  color: #805E36;
+
+  font-size: clamp(18px, 6vw, 40px);
+  font-weight: 400;
+  line-height: .91;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.nickname-form form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.profile-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.profile-preview__avatar {
+  width: clamp(40px, 20vw, 120px);
+  flex-shrink: 0;
+}
+.profile-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.profile-preview input {
+  width: 40vw;
+  max-width: 200px;
+
+  padding: 10px 4px;
+
+  border: 0;
+  outline: none;
+
+  color: #7E623A;
+  background-color: transparent;
+  
+  font-family: "Goose";
+  font-size: 20px;
+  font-weight: 700;
+}
+img.profile-divider-line  {
+  width: 40vw;
+  max-width: 200px;
+  margin-top: -15px;
+}
+
+.profile-preview input::placeholder {
+  color: rgb(98 68 43 / 65%);
+}
+
+.avatar-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.avatar-option {
+  position: relative;
+  padding: 6px;
+  border: 0;
+  border-radius: 50%;
+
+  background-color: transparent;
+
+  cursor: pointer;
+  transition: transform 150ms ease;
+}
+
+.avatar-option:hover {
+  transform: scale(1.08);
+}
+
+.avatar-option--selected {
+  transform: scale(1.08);
+}
+.avatar-option::after {
+  content: '';
+
+  position: absolute;
+  z-index: 2;
+  inset: -10%;
+
+  background-image:
+    url('/images/ui/selection-circle.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+
+  opacity: 0;
+  transform: rotate(-7deg) scale(0.9);
+
+  pointer-events: none;
+
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+}
+
+.avatar-option--selected::after {
+  opacity: 1;
+  transform: rotate(-7deg) scale(1);
+}
+.avatar-option .avatar {
+  position: relative;
+  z-index: 1;
+}
+
+.nickname-form__error {
+  color: #a33128;
+  font-weight: 700;
+  text-align: center;
+}
+
+.nickname-form__submit {
+  padding: 12px;
+  width: fit-content;
+
+  border: 0;
+
+  color: #62442b;
+  background-color: transparent;
+
+  font-family: "RubikSprayPaint";
+  -webkit-text-stroke: 0.4px #E1BC81;
+  font-size: clamp(25px, 7vw, 40px);
+  font-weight: normal;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  opacity: .8;
+  transition: .2s ease;
+}
+
+.nickname-form__submit:hover {
+  background-color: transparent;
+  opacity: 1;
+}
+
+/* 6 колонок на экранах от 1024px */
+
+@media (min-width: 540px) {
+  .avatar-options {
+    grid-template-columns: repeat(6, 1fr); 
+  }
+  .nickname-form {
+    padding: 70px 80px;
+  }
 }

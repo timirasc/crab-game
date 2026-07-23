@@ -5,6 +5,14 @@ from app.room_manager import RoomManager
 
 app = FastAPI(title='Crab Game API')
 room_manager = RoomManager()
+ALLOWED_AVATAR_IDS = {
+    'turtle',
+    'mermaid',
+    'shark',
+    'octopus',
+    'seagull',
+    'robot',
+}
 
 
 def validate_nickname(value) -> str:
@@ -30,6 +38,14 @@ def validate_nickname(value) -> str:
 
     return nickname
 
+def validate_avatar_id(value) -> str:
+    if not isinstance(value, str):
+        raise ValueError('Аватар не выбран')
+
+    if value not in ALLOWED_AVATAR_IDS:
+        raise ValueError('Выбран неизвестный аватар')
+
+    return value
 
 async def send_error(
     websocket: WebSocket,
@@ -75,6 +91,9 @@ async def websocket_endpoint(websocket: WebSocket):
                     nickname = validate_nickname(
                         message.get('nickname')
                     )
+                    avatar_id = validate_avatar_id(
+                        message.get('avatarId')
+                    )
                 except ValueError as error:
                     await send_error(websocket, str(error))
                     continue
@@ -82,6 +101,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 room = room_manager.create_room(
                     websocket,
                     nickname,
+                    avatar_id,
                 )
 
                 await websocket.send_json(
@@ -113,11 +133,14 @@ async def websocket_endpoint(websocket: WebSocket):
                     nickname = validate_nickname(
                         message.get('nickname')
                     )
-
+                    avatar_id = validate_avatar_id(
+                        message.get('avatarId')
+                    )
                     room = room_manager.join_room(
                         room_code,
                         websocket,
                         nickname,
+                        avatar_id,
                     )
                 except ValueError as error:
                     await send_error(websocket, str(error))
@@ -126,8 +149,14 @@ async def websocket_endpoint(websocket: WebSocket):
                 game_state = room.game.to_message()
 
                 players = {
-                    'blue': room.blue_nickname,
-                    'red': room.red_nickname,
+                    'blue': {
+                        'nickname': room.blue_nickname,
+                        'avatarId': room.blue_avatar_id,
+                    },
+                    'red': {
+                        'nickname': room.red_nickname,
+                        'avatarId': room.red_avatar_id,
+                    },
                 }
 
                 await room.blue_player.send_json(

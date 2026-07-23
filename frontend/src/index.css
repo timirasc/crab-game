@@ -1,3 +1,31 @@
+@font-face {
+  font-family: 'Goose';
+  src: url('./assets/fonts/goose.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'RubikBurned';
+  src: url('./assets/fonts/RubikBurned-Regular.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'RubikSprayPaint';
+  src: url('./assets/fonts/RubikSprayPaint-Regular.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+
 * {
   box-sizing: border-box;
 }
@@ -5,8 +33,13 @@
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
+  height: 100vh;
   font-family: Arial, sans-serif;
   color: #2f241c;
-  background-color: #f2dfbd;
+  overflow: hidden;
+
+  background-image: url(public/images/bg-16-9.png);
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-size: cover;
 }

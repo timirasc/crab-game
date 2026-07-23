@@ -10,14 +10,15 @@ from app.game import Game
 ROOM_CODE_LENGTH = 6
 ROOM_CODE_ALPHABET = string.ascii_uppercase + string.digits
 
-
 @dataclass
 class Room:
     code: str
     blue_player: WebSocket
     blue_nickname: str
+    blue_avatar_id: str
     red_player: WebSocket | None = None
     red_nickname: str | None = None
+    red_avatar_id: str | None = None
     game: Game = field(default_factory=Game)
 
 
@@ -29,6 +30,7 @@ class RoomManager:
         self,
         websocket: WebSocket,
         nickname: str,
+        avatar_id: str,
     ) -> Room:
         room_code = self._generate_room_code()
 
@@ -36,6 +38,7 @@ class RoomManager:
             code=room_code,
             blue_player=websocket,
             blue_nickname=nickname,
+            blue_avatar_id=avatar_id,
         )
 
         self.rooms[room_code] = room
@@ -46,6 +49,7 @@ class RoomManager:
         room_code: str,
         websocket: WebSocket,
         nickname: str,
+        avatar_id: str,
     ) -> Room:
         normalized_code = room_code.strip().upper()
         room = self.rooms.get(normalized_code)
@@ -58,6 +62,7 @@ class RoomManager:
 
         room.red_player = websocket
         room.red_nickname = nickname
+        room.red_avatar_id = avatar_id
         room.game.start()
 
         return room
