@@ -2,7 +2,7 @@ import secrets
 import string
 from dataclasses import dataclass, field
 
-from fastapi import WebSocket
+from fastapi import WebSocket, WebSocketDisconnect
 
 from app.game import Game
 
@@ -64,13 +64,25 @@ class RoomManager:
         del self.rooms[room.code]
 
         if opponent is not None:
-            await opponent.send_json(
+            await self._send_safely(
+                opponent,
                 {
                     'type': 'opponent_left',
-                }
+                },
             )
 
         return True
+
+    async def _send_safely(
+        self,
+        websocket: WebSocket,
+        message: dict,
+    ) -> bool:
+        try:
+            await websocket.send_json(message)
+            return True
+        except (WebSocketDisconnect, RuntimeError):
+            return False
 
     def join_room(
         self,
@@ -113,10 +125,16 @@ class RoomManager:
         room: Room,
         message: dict,
     ):
-        await room.blue_player.send_json(message)
+        await self._send_safely(
+            room.blue_player,
+            message,
+        )
 
         if room.red_player is not None:
-            await room.red_player.send_json(message)
+            await self._send_safely(
+                room.red_player,
+                message,
+            )
 
     async def remove_player(
         self,

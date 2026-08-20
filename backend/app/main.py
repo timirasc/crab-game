@@ -26,9 +26,9 @@ def validate_nickname(value) -> str:
             'Никнейм должен содержать минимум 2 символа'
         )
 
-    if len(nickname) > 20:
+    if len(nickname) > 10:
         raise ValueError(
-            'Никнейм должен содержать максимум 20 символов'
+            'Никнейм должен содержать максимум 10 символов'
         )
 
     if not nickname.isprintable():
@@ -38,6 +38,7 @@ def validate_nickname(value) -> str:
 
     return nickname
 
+
 def validate_avatar_id(value) -> str:
     if not isinstance(value, str):
         raise ValueError('Аватар не выбран')
@@ -46,6 +47,7 @@ def validate_avatar_id(value) -> str:
         raise ValueError('Выбран неизвестный аватар')
 
     return value
+
 
 async def send_error(
     websocket: WebSocket,
@@ -251,4 +253,6 @@ async def websocket_endpoint(websocket: WebSocket):
                 )
 
     except WebSocketDisconnect:
+        pass
+    finally:
         await room_manager.remove_player(websocket)
