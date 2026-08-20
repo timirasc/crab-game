@@ -11,6 +11,8 @@ import Lobby from './components/Lobby/Lobby'
 import NicknameForm from './components/NicknameForm/NicknameForm'
 import { isValidAvatarId } from './data/avatars'
 import Avatar from './components/Avatar/Avatar'
+import MainMenu from './components/MainMenu/MainMenu'
+import { getAvatar } from './data/avatars'
 
 
 
@@ -58,7 +60,7 @@ function App() {
   const [winner, setWinner] = useState(null)
   const [skippedPlayer, setSkippedPlayer] = useState(null)
   const [isDraw, setIsDraw] = useState(false)
-  const [gamePhase, setGamePhase] = useState('lobby')
+  const [gamePhase, setGamePhase] = useState('menu')
   const [roomCode, setRoomCode] = useState('')
   const [playerColor, setPlayerColor] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
@@ -68,10 +70,24 @@ function App() {
     blue: null,
     red: null,
   })
+  const [isLeavingRoom, setIsLeavingRoom] = useState(false)
   
 
   
   const handleServerMessage = useCallback((message) => {
+    if (message.type === 'room_left') {
+      setGamePhase('menu')
+      setRoomCode('')
+      setPlayerColor(null)
+      setPlayers({
+        blue: null,
+        red: null,
+      })
+      setSelectedCrab(null)
+      setIsLeavingRoom(false)
+      setErrorMessage('')
+    }
+
     if (message.type === 'room_created') {
       setRoomCode(message.roomCode)
       setPlayerColor(message.color)
@@ -108,10 +124,14 @@ function App() {
     if (message.type === 'error') {
       setErrorMessage(message.message)
       setIsMovePending(false)
+      setIsLeavingRoom(false)
     }
 
-    if (message.type === 'opponent_disconnected') {
-      setGamePhase('lobby')
+    if (
+      message.type === 'opponent_left' ||
+      message.type === 'opponent_disconnected'
+    ) {
+      setGamePhase('menu')
       setRoomCode('')
       setPlayerColor(null)
       setPlayers({
@@ -120,7 +140,8 @@ function App() {
       })
       setSelectedCrab(null)
       setIsMovePending(false)
-      setErrorMessage('Соперник отключился')
+      setIsLeavingRoom(false)
+      setErrorMessage('Соперник покинул комнату')
     }
   }, [])
 
@@ -202,19 +223,34 @@ function App() {
       column: columnIndex,
     })
   }
+
+  function handleLeaveRoom() {
+    if (isLeavingRoom) return
+
+    const wasSent = sendMessage({
+      type: 'leave_room',
+    })
+
+    if (wasSent) {
+      setIsLeavingRoom(true)
+      setErrorMessage('')
+    } else {
+      setErrorMessage('Нет соединения с сервером')
+    }
+  }
   function handleMove(move) {
-  if (!selectedCrab || isMovePending) return
+    if (!selectedCrab || isMovePending) return
 
-  const wasSent = sendMessage({
-    type: 'move',
-    row: selectedCrab.row,
-    column: selectedCrab.column,
-    direction: move.name,
-  })
+    const wasSent = sendMessage({
+      type: 'move',
+      row: selectedCrab.row,
+      column: selectedCrab.column,
+      direction: move.name,
+    })
 
-  if (wasSent) {
-    setIsMovePending(true)
-    setErrorMessage('')
+    if (wasSent) {
+      setIsMovePending(true)
+      setErrorMessage('')
   } else {
     setErrorMessage('Нет соединения с сервером')
   }
@@ -232,13 +268,40 @@ function App() {
     )
   }
 
+  if (gamePhase === 'menu') {
+  const avatar = getAvatar(profile.avatarId)
+  return (
+      <main className="game-menu unselectable">
+        <div className="menu-side-wrapper">
+          <img className='crab-game-logo' src="../public/images/Crab-game-logo.png" alt="Crab game" />
+
+          <div className="menu-profile-card">
+            <img src={avatar.src} alt={avatar.label} className='player__avatar'/>
+
+            <div className="player__nickname">
+              <p>{profile.nickname}</p>
+              <img className='profile-divider-line' src="../../public/images/ui/line-profile.png" alt="divider-line" />
+            </div>
+          </div>
+        </div>
+
+        <MainMenu
+          onPvpClick={() => {
+            setErrorMessage('')
+            setGamePhase('lobby')
+          }}
+        />
+      </main>
+    )
+  }
+
   if (gamePhase !== 'playing') {
     return (
       <main className="game">
 
-        <p className={`connection connection--${connectionStatus}`}>
+        {/* <p className={`connection connection--${connectionStatus}`}>
           {connectionLabels[connectionStatus]}
-        </p>
+        </p> */}
 
         <Lobby
           connectionStatus={connectionStatus}
@@ -247,6 +310,10 @@ function App() {
           errorMessage={errorMessage}
           onCreateRoom={handleCreateRoom}
           onJoinRoom={handleJoinRoom}
+          setGamePhase={setGamePhase}
+          setErrorMessage={setErrorMessage}
+          onLeaveRoom={handleLeaveRoom}
+          isLeavingRoom={isLeavingRoom}
         />
       </main>
     )

@@ -44,6 +44,34 @@ class RoomManager:
         self.rooms[room_code] = room
         return room
 
+    async def leave_room(
+        self,
+        websocket: WebSocket,
+    ) -> bool:
+        player = self.find_player(websocket)
+
+        if player is None:
+            return False
+
+        room, player_color = player
+
+        opponent = (
+            room.red_player
+            if player_color == 'blue'
+            else room.blue_player
+        )
+
+        del self.rooms[room.code]
+
+        if opponent is not None:
+            await opponent.send_json(
+                {
+                    'type': 'opponent_left',
+                }
+            )
+
+        return True
+
     def join_room(
         self,
         room_code: str,
@@ -90,27 +118,11 @@ class RoomManager:
         if room.red_player is not None:
             await room.red_player.send_json(message)
 
-    async def remove_player(self, websocket: WebSocket):
-        player = self.find_player(websocket)
-
-        if player is None:
-            return
-
-        room, player_color = player
-        opponent = (
-            room.red_player
-            if player_color == 'blue'
-            else room.blue_player
-        )
-
-        del self.rooms[room.code]
-
-        if opponent is not None:
-            await opponent.send_json(
-                {
-                    'type': 'opponent_disconnected',
-                }
-            )
+    async def remove_player(
+        self,
+        websocket: WebSocket,
+    ):
+        await self.leave_room(websocket)
 
     def _generate_room_code(self) -> str:
         while True:

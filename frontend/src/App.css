@@ -1,3 +1,5 @@
+/* Базовые стили: 0–479px */
+
 .game {
   min-height: 100vh;
   display: flex;
@@ -13,7 +15,7 @@
   margin: 0;
 }
 
-/* Игровая доска */
+  /* Игровая доска */
 
 .board {
   position: relative;
@@ -27,17 +29,17 @@
   background-position: center;
   background-size: 100% 100%;
 
-  transform: rotateX(45deg);
+  transform: rotateX(40deg);
   transform-origin: center bottom;
   transform-style: preserve-3d;
-  top: -15vw;
+  top: -23vw;
 }
 
 .board-scene {
-  width: min(100vw, 700px);
+  width: min(100vw, 950px);
   aspect-ratio: 1;
-  perspective: min(120vw, 750px);
-  perspective-origin: center 25%;
+  perspective: min(120vw, 950px);
+  perspective-origin: center 30%;
 }
 
 .board-grid {
@@ -72,7 +74,7 @@
   background-color: transparent;
 }
 
-/* Крабы */
+  /* Крабы */
 
 .crab {
   position: absolute;
@@ -120,7 +122,7 @@
     0 0 0 9px #2f241c;
 }
 
-/* Стрелки движения */
+  /* Стрелки движения */
 
 .move-arrow {
   position: absolute;
@@ -138,7 +140,7 @@
   cursor: pointer;
 
   background-color: transparent;
-  background-image: url(/images/arrow.png);
+  background-image: url(/images/ui/arrow.png);
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100% 100%;
@@ -185,7 +187,7 @@
   transform: translateX(-35%) translateY(-50%) rotate(-90deg) scale(1.2);
 }
 
-/* Состояние матча */
+  /* Состояние матча */
 
 .current-player {
   margin-top: -12px;
@@ -199,7 +201,7 @@
   font-weight: 700;
 }
 
-/* Состояние соединения */
+  /* Состояние соединения */
 
 .connection {
   margin-top: -16px;
@@ -220,20 +222,28 @@
   color: #a33128;
 }
 
-/* Экран комнаты */
+  /* Экран комнаты */
 
 .lobby {
-  width: min(90vw, 360px);
+  width: min(92vw, 395px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
 
-  padding: 24px;
-  border: 3px solid #62442b;
+  padding: min(70px, 20vw) min(13vw, 55px) min(55px, calc(8dvh - 12px));
   border-radius: 12px;
 
-  background-color: #d7aa68;
+  background-image: url(public/images/bg-lobby.png);
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-size: 100% 100%;
+}
+.lobby span{
+  color: #4A2F17;
+  
+  font-family: 'Goose';
+  font-weight: 400;
 }
 
 .lobby h2,
@@ -241,35 +251,101 @@
   margin: 0;
 }
 
+.lobby h2 {
+  color: #684E33;
+  font-family: 'RubikSprayPaint';
+  font-weight: 400;
+  -webkit-text-stroke: 0.3px #E1BC81;
+  text-align: center;
+}
+.lobby {
+  text-align: center;
+}
+
 .join-form {
   width: 100%;
+  height: auto;
   display: flex;
-  gap: 8px;
+  gap: 4px;
+
+  background-image: url(public/images/ui/room-btn-border.png);
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-size: 100% 100%;
 }
 
 .join-form input {
   min-width: 0;
   flex: 1;
+  padding-left: 16px;
+  padding-top: 6px;
+  border: none;
 
-  padding: 10px;
-  border: 2px solid #62442b;
-  border-radius: 8px;
+  font-family: 'Goose';
+  font-weight: 800;
+  font-size: clamp(16px, 3vh, 20px);
+  letter-spacing: 5px;
+  color: #533921;
 
-  font: inherit;
-  text-transform: uppercase;
+  background-color: transparent;
+}
+
+.join-form input::placeholder {
+  color: #805E36;
+  letter-spacing: normal;
+  font-size: clamp(16px, 3vh, 20px);
+  font-family: 'Goose';
+  font-weight: 400;
+  
+}
+
+.join-form input:focus {
+  outline: none;
 }
 
 .lobby-button {
-  padding: 10px 16px;
-  border: 2px solid #62442b;
-  border-radius: 8px;
+  padding: 12px;
+  border: none;
 
-  background-color: #ffe084;
-
-  font: inherit;
-  font-weight: 700;
+  background-color: transparent;
 
   cursor: pointer;
+}
+
+.lobby-button[type="submit"] {
+  padding: 0;
+  aspect-ratio: 1 / 1;
+  width: 45px;
+
+  background-image: url(public/images/ui/accept-btn.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 85% 85%;
+}
+
+.lobby-button.create-room {
+  width: 100%;
+
+  background-image: url(public/images/ui/room-btn-border.png);
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-size: 100% 100%;
+  
+  font-family: 'RubikSprayPaint';
+  color: #533921;
+  font-size: clamp(16px, 3vh, 20px);
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.lobby .back-to-menu {
+  background-color: transparent;
+  
+  font-family: 'RubikSprayPaint';
+  color: #684E33;
+  -webkit-text-stroke: 0.3px #E1BC81;
+  font-weight: 400;
+  text-transform: uppercase;
 }
 
 .lobby-button:disabled {
@@ -288,7 +364,7 @@
 }
 
 
-/* Стили отображения игроков */
+  /* Стили отображения игроков */
 
 .players {
   width: min(90vw, 420px);
@@ -339,7 +415,7 @@
   font-weight: 700;
 }
 
-/* Стили отображения профиля */
+  /* Стили отображения ввода профиля */
 .player__avatar {
   width: 52px;
 }
@@ -359,7 +435,7 @@
 
 .nickname-form {
   width: min(100vw, 820px);
-  padding: 70px 50px;
+  padding: min(70px, 15vw) min(70px, 10vw);
 
   background-image: url(public/images/bg-lobby.png);
   background-repeat: no-repeat;
@@ -370,7 +446,7 @@
 .nickname-form h2 {
   font-family: 'RubikSprayPaint';
   -webkit-text-stroke: 0.3px #E1BC81;
-  max-width: 600px;
+  max-width: 90%;
   margin: 0 auto 24px;
 
   color: #805E36;
@@ -386,7 +462,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: 20px;
 }
 
 .profile-preview {
@@ -435,7 +511,8 @@ img.profile-divider-line  {
 .avatar-options {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+  gap: 15px;
+  margin: 0 15px;
 }
 
 .avatar-option {
@@ -520,13 +597,482 @@ img.profile-divider-line  {
   opacity: 1;
 }
 
-/* 6 колонок на экранах от 1024px */
+  /* Главное меню */
+.main-menu {
+  width: min(90vw, 380px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  flex: auto;
 
-@media (min-width: 540px) {
+  padding: max(86px, 15vh) 28px max(86px, 15vh);
+
+  background-image:
+    url('/images/ui/menu-bg.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.main-menu__buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: auto;
+}
+
+.main-menu__button,
+.back-to-menu {
+  padding: 12px 35px;
+
+  border: none;
+
+  color: #2D1C0A;
+  background-color: transparent;
+
+  font: inherit;
+  font-size: clamp(20px, 2rem, 24px);
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 150ms ease,
+    transform 150ms ease;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 100% 100%;
+}
+.back-to-menu {
+  background-color: #E1BC81;
+}
+.main-menu__button {
+  font-family: 'RubikBurned';
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.main-menu__button.tutorial {
+  background-image: url(public/images/ui/boards/board-brown-1.png);
+  transform: rotate(-5deg);
+}
+.main-menu__button.single-game {
+  background-image: url(public/images/ui/boards/board-gray-blue-1.png);
+}
+.main-menu__button.pvp {
+  background-image: url(public/images/ui/boards/board-gray-blue-2.png);
+  transform: rotate(5deg);
+}
+.main-menu__button.settings {
+  background-image: url(public/images/ui/boards/board-brown-1.png);
+}
+.main-menu__button.rules {
+  background-image: url(public/images/ui/boards/board-brown-2.png);
+  transform: rotate(-5deg);
+}
+
+.main-menu__button:hover:not(:disabled),
+.back-to-menu:hover {
+  transform: scale(1.03);
+}
+
+.main-menu__button:disabled {
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.back-to-menu {
+  width: min(90vw, 200px);
+}
+
+.crab-game-logo {
+  height: 25dvh;
+  margin: 5dvh auto;
+}
+
+.game-menu {
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  
+  background-image: url(public/images/bg-9-16.png);
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: cover;
+}
+.menu-profile-card {
+  display: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                      /* Небольшие планшеты вертикально*/
+
+@media (orientation: portrait) 
+  and (min-width: 540px) 
+  and (hover: none) 
+  and (pointer: coarse) {
+  /* Стили отображения ввода профиля */
   .avatar-options {
-    grid-template-columns: repeat(6, 1fr); 
+    grid-template-columns: repeat(4, 1fr);
+    margin: 0 20px;
+    gap: 20px;
   }
+  .profile-preview__avatar {
+    width: clamp(40px, 20vw, 120px);
+  }
+  .nickname-form h2 {
+    max-width: 90%;
+  }
+
+  /* Главное меню */
+  .main-menu__button {
+    font-size: 5vw;
+  }
+}
+
+                                                    /* Планшеты вертикально*/
+@media (orientation: portrait) 
+  and (min-width: 768px) 
+  and (hover: none) 
+  and (pointer: coarse) {
+  /* Стили отображения ввода профиля */
   .nickname-form {
-    padding: 70px 80px;
+    padding: min(100px, 15vw) min(70px, 10vw);
   }
+  .profile-preview__avatar {
+    width: clamp(40px, 20vw, 140px);
+  }
+  .nickname-form form {
+    gap: 35px;
+  }
+  .nickname-form h2 {
+    margin: 0 auto 40px;
+  }
+}
+
+                                                      /* Планшеты горизонтально*/
+@media (orientation: landscape) 
+  and (max-height: 1000px) 
+  and (hover: none) 
+  and (pointer: coarse) {
+  /* Стили отображения ввода профиля */  
+  .nickname-form {
+    padding: min(70px, 11vh) min(70px, 10vw) min(70px, 6vh);
+  }
+  .nickname-form h2 {
+    font-size: clamp(20px, 4vh, 40px);
+    margin: 0 auto 3vh;
+    max-width: 90%;
+  }
+  .nickname-form form {
+    gap: 3vh;
+  }
+    .profile-preview__avatar {
+      width: clamp(40px, 15vh, 120px);
+  }
+  .avatar-options {
+      grid-template-columns: repeat(6, 1fr);
+      margin: 0 3.5vh;
+      gap: 3.5vh;
+  }
+  .nickname-form__submit {
+    font-size: clamp(25px, 7vh, 40px);
+  }
+  /* Главное меню */
+  .game-menu {
+    flex-direction: row-reverse;
+    align-items: unset;
+    justify-content: center;
+    gap: 10vw;
+
+    background-image: url(public/images/bg-16-9.png);
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    background-size: cover;
+  }
+  .main-menu {
+    align-self: flex-end;
+    flex: 0 0 auto;
+    padding: max(65px, 20vh) 0 max(65px, 20vh);
+    height: 95vh;
+    height: 95dvh;
+    width: max(20vw, 230px);
+  }
+  .menu-profile-card {
+    display: flex;
+    padding: 2vh 2vw;
+    gap: 2vh;
+
+    background-image: url(public/images/bg-lobby.png);
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    background-size: 100% 100%;
+  }
+  .menu-profile-card .player__avatar {
+    height: 15vh;
+    width: auto;
+  }
+  .menu-side-wrapper {
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+  }
+  .menu-side-wrapper .player__nickname {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 15vw;
+    margin-top: -4vh;
+  }
+  .main-menu__button {
+    font-size: 5vh;
+  }
+  .crab-game-logo {
+    height: auto;
+    width: 40vw;
+    margin-top: -15vh;
+  }
+
+}
+                                                /* Мобильные горизонтально*/
+@media (orientation: landscape) 
+  and (max-height: 500px) 
+  and (hover: none) 
+  and (pointer: coarse) {
+
+  /* Экран комнаты */
+  .lobby {
+    padding: min(60px, 15dvh) min(13vw, 55px) min(40px, 12dvh);
+  }
+
+  /* Стили отображения ввода профиля */  
+  .nickname-form {
+    width: min(65vw, 820px);
+    padding: min(70px, 11vh) min(70px, 5vw) min(70px, 6vh);
+  }
+  .nickname-form h2 {
+    font-size: clamp(20px, 4vh, 40px);
+    margin: 0 auto 14px;
+  }
+  .nickname-form form {
+    gap: 10px;
+  }
+    .profile-preview__avatar {
+      width: clamp(40px, 15vh, 120px);
+  }
+  .avatar-options {
+      grid-template-columns: repeat(6, 1fr);
+      margin: 0 10px;
+      gap: 6px;
+  }
+  .avatar-option {
+    padding: 3px;
+  }
+  .nickname-form__submit {
+    font-size: clamp(25px, 7vh, 40px);
+  }
+  
+  /* Главное меню */
+  .game-menu {
+    gap: 5vw
+  }
+}
+
+                                                  /* Небольшие ноутбуки */
+@media (min-width: 1024px)  
+  and (hover: hover) 
+  and (pointer: fine){
+  /* Экран комнаты */
+  .lobby {
+    width: min(45vw, 600px);
+    padding: 70px 65px 40px;
+    gap: 20px;
+  }
+  .lobby-button.create-room, .join-form input {
+    font-size: 25px;
+  }
+  .lobby .back-to-menu {
+    font-size: 35px;
+  }
+  .lobby span {
+    font-size: 20px;
+  }
+  .lobby-button[type="submit"] {
+    width: 53px;
+  }
+  .back-to-menu {
+    width: 250px;
+    color: #533921;
+    opacity: .8;
+    transition: .2s ease;
+  }
+  .back-to-menu:hover {
+    opacity: 1;
+  }
+  /* Стили отображения ввода профиля */
+  .avatar-options {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  .profile-preview input {
+    font-size: 26px;
+  }
+  img.profile-divider-line{
+    max-width: 300px;
+  }
+  .nickname-form h2 {
+    font-size: clamp(30px, 3vw, 45px);
+  }
+  .profile-preview__avatar {
+    width: clamp(95px, 10vw, 160px);
+  }
+  .nickname-form__submit {
+    font-size: clamp(30px, 3vw, 45px);
+  }
+
+  /* Главное меню */
+  .game-menu {
+    flex-direction: row-reverse;
+    align-items: unset;
+    justify-content: space-evenly;
+    gap: 5vw;
+
+    background-image: url(public/images/bg-16-9.png);
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    background-size: 140%;
+  }
+  .main-menu {
+    align-self: flex-end;
+    flex: 0 0 auto;
+    padding: max(65px, 17vh) 0 max(65px, 20vh);
+    height: 85vh;
+    width: max(20vw, 230px);
+    margin-left: 10vw;
+    margin-right: -10vw;
+  }
+  .menu-profile-card {
+    display: flex;
+    padding: 3vh 2vw;
+    gap: 2vh;
+    margin-right: -2vw;
+
+    background-image: url(public/images/bg-lobby.png);
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    background-size: 100% 100%;
+  }
+  .menu-profile-card .player__avatar {
+    height: 15vh;
+    width: auto;
+  }
+  .menu-side-wrapper {
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+  }
+  .menu-side-wrapper .player__nickname {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 15vw;
+    margin-top: -2vh;
+    font-size: 2vw;
+    line-height: 2vw;
+  }
+  .main-menu__buttons{
+    gap: 2vh;
+  }
+  .main-menu__button {
+    font-size: 4vh;
+    padding: 2vh 6vh;
+  }
+  .crab-game-logo {
+    height: auto;
+    width: 30vw;
+    margin-top: -20vh;
+  }
+  .player__nickname img.profile-divider-line {
+    width: 100%;
+  }
+  .player__nickname p {
+    font-family: 'Goose';
+    padding-left: 8px;
+    color: #7E623A;
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+}
+
+                                              /* Обычные ноутбуки и десктопы */
+@media (min-width: 1280px) 
+  and (hover: hover) 
+  and (pointer: fine) {
+  /* Экран комнаты */
+  .lobby {
+    padding: 90px 75px 70px;
+    gap: 20px;
+  }
+  .lobby-button.create-room, .join-form input {
+    font-size: 35px;
+  }
+  .lobby .back-to-menu {
+    font-size: 40px;
+  }
+  .lobby span {
+    font-size: 30px;
+  }
+  .lobby-button[type="submit"] {
+    width: 66px;
+  }
+  .join-form input {
+    padding-left: 25px;
+    padding-top: 10px;
+  }
+  .join-form input::placeholder {
+    font-size: 35px;
+  }
+}
+
+/* Обычные ноутбуки и десктопы */
+@media (min-width: 1280px) 
+  and (hover: hover) 
+  and (pointer: fine) {
+
+}
+
+                                                  /* Большие мониторы */
+@media (min-width: 1536px) and (hover: hover) and (pointer: fine) {
+  /* Стили отображения ввода профиля */
 }

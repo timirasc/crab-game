@@ -7,6 +7,10 @@ function Lobby({
   errorMessage,
   onCreateRoom,
   onJoinRoom,
+  setGamePhase,
+  setErrorMessage,
+  onLeaveRoom,
+  isLeavingRoom
 }) {
   const [roomCodeInput, setRoomCodeInput] = useState('')
 
@@ -28,15 +32,26 @@ function Lobby({
         <h2>Ожидаем соперника</h2>
         <p>Код комнаты:</p>
         <strong className="room-code">{roomCode}</strong>
-        <p>Передай этот код второму игроку</p>
+        <p>Нажмите на код для копирования. Передайте его второму игроку</p>
+        <button
+          className="back-to-menu"
+          type="button"
+          disabled={isLeavingRoom}
+          onClick={onLeaveRoom}
+        >
+          {isLeavingRoom
+            ? 'Выход...'
+            : 'В меню'}
+        </button>
       </section>
+      
     )
   }
 
   return (
     <section className="lobby">
       <button
-        className="lobby-button"
+        className="lobby-button create-room"
         type="button"
         disabled={!isConnected}
         onClick={onCreateRoom}
@@ -53,6 +68,7 @@ function Lobby({
           maxLength={6}
           placeholder="Код комнаты"
           aria-label="Код комнаты"
+          spellCheck="false"
           onChange={(event) =>
             setRoomCodeInput(event.target.value.toUpperCase())
           }
@@ -63,13 +79,25 @@ function Lobby({
           type="submit"
           disabled={!isConnected || !roomCodeInput.trim()}
         >
-          Войти
+          .
         </button>
-      </form>
 
+        
+      </form>
       {errorMessage && (
         <p className="lobby-error">{errorMessage}</p>
       )}
+      <button
+        className="back-to-menu"
+        type="button"
+        onClick={() => {
+          setErrorMessage('')
+          setGamePhase('menu')
+        }}
+      >
+        Назад
+      </button>
+
     </section>
   )
 }

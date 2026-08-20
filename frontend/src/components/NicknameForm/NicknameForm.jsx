@@ -48,7 +48,7 @@ function NicknameForm({ onSubmit }) {
   }
 
   return (
-    <section className="nickname-form">
+    <section className="nickname-form unselectable">
       <h2>
         Для начала игры введите ник и выберите аватар
       </h2>
@@ -73,7 +73,7 @@ function NicknameForm({ onSubmit }) {
                 setError('')
                 }}
             />
-            <img className='profile-divider-line' src="../../public/images/line-profile.png" alt="divider-line" />
+            <img className='profile-divider-line' src="../../public/images/ui/line-profile.png" alt="divider-line" />
         </div>
           
         </div>

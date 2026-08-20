@@ -38,8 +38,15 @@ body {
   color: #2f241c;
   overflow: hidden;
 
-  background-image: url(public/images/bg-16-9.png);
+  background-image: url(../public/images/bg-16-9.PNG);
   background-repeat: no-repeat;
-  background-position: bottom;
+  background-position: bottom center;
   background-size: cover;
+}
+
+.unselectable {
+  -webkit-user-select: none; 
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }

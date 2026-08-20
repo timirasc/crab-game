@@ -179,6 +179,24 @@ async def websocket_endpoint(websocket: WebSocket):
                     }
                 )
 
+            elif message_type == 'leave_room':
+                room_was_removed = await room_manager.leave_room(
+                    websocket
+                )
+
+                if not room_was_removed:
+                    await send_error(
+                        websocket,
+                        'Игрок не находится в комнате',
+                    )
+                    continue
+
+                await websocket.send_json(
+                    {
+                        'type': 'room_left',
+                    }
+                )
+
             elif message_type == 'move':
                 player = room_manager.find_player(websocket)
 
