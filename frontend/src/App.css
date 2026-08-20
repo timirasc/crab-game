@@ -234,7 +234,7 @@
   padding: min(70px, 20vw) min(13vw, 55px) min(55px, calc(8dvh - 12px));
   border-radius: 12px;
 
-  background-image: url(public/images/bg-lobby.png);
+  background-image: url(/images/bg-lobby.png);
   background-repeat: no-repeat;
   background-position: bottom;
   background-size: 100% 100%;
@@ -268,7 +268,7 @@
   display: flex;
   gap: 4px;
 
-  background-image: url(public/images/ui/room-btn-border.png);
+  background-image: url(/images/ui/room-btn-border.png);
   background-repeat: no-repeat;
   background-position: bottom;
   background-size: 100% 100%;
@@ -317,7 +317,7 @@
   aspect-ratio: 1 / 1;
   width: 45px;
 
-  background-image: url(public/images/ui/accept-btn.png);
+  background-image: url(/images/ui/accept-btn.png);
   background-repeat: no-repeat;
   background-position: center;
   background-size: 85% 85%;
@@ -326,7 +326,7 @@
 .lobby-button.create-room {
   width: 100%;
 
-  background-image: url(public/images/ui/room-btn-border.png);
+  background-image: url(/images/ui/room-btn-border.png);
   background-repeat: no-repeat;
   background-position: bottom;
   background-size: 100% 100%;
@@ -437,7 +437,7 @@
   width: min(100vw, 820px);
   padding: min(70px, 15vw) min(70px, 10vw);
 
-  background-image: url(public/images/bg-lobby.png);
+  background-image: url(/images/bg-lobby.png);
   background-repeat: no-repeat;
   background-position: bottom;
   background-size: 100% 100%;
@@ -654,21 +654,21 @@ img.profile-divider-line  {
 }
 
 .main-menu__button.tutorial {
-  background-image: url(public/images/ui/boards/board-brown-1.png);
+  background-image: url(/images/ui/boards/board-brown-1.png);
   transform: rotate(-5deg);
 }
 .main-menu__button.single-game {
-  background-image: url(public/images/ui/boards/board-gray-blue-1.png);
+  background-image: url(/images/ui/boards/board-gray-blue-1.png);
 }
 .main-menu__button.pvp {
-  background-image: url(public/images/ui/boards/board-gray-blue-2.png);
+  background-image: url(/images/ui/boards/board-gray-blue-2.png);
   transform: rotate(5deg);
 }
 .main-menu__button.settings {
-  background-image: url(public/images/ui/boards/board-brown-1.png);
+  background-image: url(/images/ui/boards/board-brown-1.png);
 }
 .main-menu__button.rules {
-  background-image: url(public/images/ui/boards/board-brown-2.png);
+  background-image: url(/images/ui/boards/board-brown-2.png);
   transform: rotate(-5deg);
 }
 
@@ -700,7 +700,7 @@ img.profile-divider-line  {
   justify-content: space-between;
   align-items: center;
   
-  background-image: url(public/images/bg-9-16.png);
+  background-image: url(/images/bg-9-16.png);
   background-repeat: no-repeat;
   background-position: bottom center;
   background-size: cover;
@@ -708,7 +708,42 @@ img.profile-divider-line  {
 .menu-profile-card {
   display: none;
 }
+.notification {
+  position: fixed;
+  z-index: 100;
+  top: 24px;
+  left: 50%;
 
+  width: min(calc(100vw - 32px), 380px);
+  padding: 14px 20px;
+
+  border: 3px solid #684e33;
+  border-radius: 12px;
+
+  color: #533921;
+  background-color: #e1bc81;
+  box-shadow: 0 8px 20px rgb(0 0 0 / 25%);
+
+  font-family: 'Goose', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+
+  transform: translateX(-50%);
+  animation: notification-enter 200ms ease-out;
+}
+
+@keyframes notification-enter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
 
 
 
@@ -813,7 +848,7 @@ img.profile-divider-line  {
     justify-content: center;
     gap: 10vw;
 
-    background-image: url(public/images/bg-16-9.png);
+    background-image: url(/images/bg-16-9.png);
     background-repeat: no-repeat;
     background-position: bottom center;
     background-size: cover;
@@ -831,7 +866,7 @@ img.profile-divider-line  {
     padding: 2vh 2vw;
     gap: 2vh;
 
-    background-image: url(public/images/bg-lobby.png);
+    background-image: url(/images/bg-lobby.png);
     background-repeat: no-repeat;
     background-position: bottom center;
     background-size: 100% 100%;
@@ -966,7 +1001,7 @@ img.profile-divider-line  {
     justify-content: space-evenly;
     gap: 5vw;
 
-    background-image: url(public/images/bg-16-9.png);
+    background-image: url(/images/bg-16-9.png);
     background-repeat: no-repeat;
     background-position: bottom center;
     background-size: 140%;
@@ -986,7 +1021,7 @@ img.profile-divider-line  {
     gap: 2vh;
     margin-right: -2vw;
 
-    background-image: url(public/images/bg-lobby.png);
+    background-image: url(/images/bg-lobby.png);
     background-repeat: no-repeat;
     background-position: bottom center;
     background-size: 100% 100%;

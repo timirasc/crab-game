@@ -8,7 +8,7 @@ import {
 
 
 const MIN_NICKNAME_LENGTH = 2
-const MAX_NICKNAME_LENGTH = 15
+const MAX_NICKNAME_LENGTH = 10
 
 function NicknameForm({ onSubmit }) {
   const [nickname, setNickname] = useState('')
@@ -73,7 +73,7 @@ function NicknameForm({ onSubmit }) {
                 setError('')
                 }}
             />
-            <img className='profile-divider-line' src="../../public/images/ui/line-profile.png" alt="divider-line" />
+            <img className='profile-divider-line' src="/images/ui/line-profile.png" alt="divider-line" />
         </div>
           
         </div>

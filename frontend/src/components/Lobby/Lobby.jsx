@@ -10,7 +10,10 @@ function Lobby({
   setGamePhase,
   setErrorMessage,
   onLeaveRoom,
-  isLeavingRoom
+  onCopyRoomCode,
+  isLeavingRoom,
+  notification,
+  isLobbyRequestPending,
 }) {
   const [roomCodeInput, setRoomCodeInput] = useState('')
 
@@ -31,7 +34,16 @@ function Lobby({
       <section className="lobby">
         <h2>Ожидаем соперника</h2>
         <p>Код комнаты:</p>
-        <strong className="room-code">{roomCode}</strong>
+        <strong className="room-code">
+          <button
+            className="room-code"
+            type="button"
+            onClick={onCopyRoomCode}
+            aria-label={`Скопировать код комнаты ${roomCode}`}
+          >
+            {roomCode}
+          </button>
+        </strong>
         <p>Нажмите на код для копирования. Передайте его второму игроку</p>
         <button
           className="back-to-menu"
@@ -43,6 +55,15 @@ function Lobby({
             ? 'Выход...'
             : 'В меню'}
         </button>
+        {notification && (
+          <div
+            className="notification"
+            role="status"
+            aria-live="polite"
+          >
+            {notification}
+          </div>
+        )}
       </section>
       
     )
@@ -56,7 +77,9 @@ function Lobby({
         disabled={!isConnected}
         onClick={onCreateRoom}
       >
-        Создать комнату
+        {isLobbyRequestPending
+          ? 'Создаём...'
+          : 'Создать комнату'}
       </button>
 
       <span>или</span>
@@ -79,7 +102,6 @@ function Lobby({
           type="submit"
           disabled={!isConnected || !roomCodeInput.trim()}
         >
-          .
         </button>
 
         

@@ -1,5 +1,6 @@
 import {
   useCallback,
+  useEffect,
   useState,
 } from 'react'
 import './App.css'
@@ -27,19 +28,21 @@ function getStoredProfile() {
     if (!savedProfile) return null
 
     const profile = JSON.parse(savedProfile)
+    const nickname = profile?.nickname?.trim()
+    const avatarId = profile?.avatarId
 
     if (
-      typeof profile?.nickname !== 'string' ||
-      profile.nickname.trim().length < 2 ||
-      profile.nickname.trim().length > 20 ||
-      !isValidAvatarId(profile.avatarId)
+      typeof nickname !== 'string' ||
+      nickname.length < 2 ||
+      nickname.length > 10 ||
+      !isValidAvatarId(avatarId)
     ) {
       return null
     }
 
     return {
-      nickname: profile.nickname.trim(),
-      avatarId: profile.avatarId,
+      nickname,
+      avatarId,
     }
   } catch {
     return null
@@ -71,8 +74,21 @@ function App() {
     red: null,
   })
   const [isLeavingRoom, setIsLeavingRoom] = useState(false)
+  const [notification, setNotification] = useState('')
+  const [isLobbyRequestPending, setIsLobbyRequestPending] = useState(false)
   
 
+  useEffect(() => {
+    if (!notification) return undefined
+
+    const timeoutId = setTimeout(() => {
+      setNotification('')
+    }, 3000)
+
+    return () => {
+      clearTimeout(timeoutId)
+    }
+  }, [notification])
   
   const handleServerMessage = useCallback((message) => {
     if (message.type === 'room_left') {
@@ -89,6 +105,7 @@ function App() {
     }
 
     if (message.type === 'room_created') {
+      setIsLobbyRequestPending(false)
       setRoomCode(message.roomCode)
       setPlayerColor(message.color)
       setGamePhase('waiting')
@@ -96,6 +113,7 @@ function App() {
     }
 
     if (message.type === 'game_started') {
+      setIsLobbyRequestPending(false)
       setRoomCode(message.roomCode)
       setPlayerColor(message.color)
       setPlayers(message.players)
@@ -122,6 +140,7 @@ function App() {
     }
 
     if (message.type === 'error') {
+      setIsLobbyRequestPending(false)
       setErrorMessage(message.message)
       setIsMovePending(false)
       setIsLeavingRoom(false)
@@ -141,7 +160,8 @@ function App() {
       setSelectedCrab(null)
       setIsMovePending(false)
       setIsLeavingRoom(false)
-      setErrorMessage('Соперник покинул комнату')
+      setErrorMessage('')
+      setNotification('Соперник покинул комнату')
     }
   }, [])
 
@@ -170,6 +190,8 @@ function App() {
   }
 
   function handleCreateRoom() {
+    if (isLobbyRequestPending) return
+
     setErrorMessage('')
 
     const wasSent = sendMessage({
@@ -184,6 +206,8 @@ function App() {
   }
 
   function handleJoinRoom(code) {
+    if (isLobbyRequestPending) return
+
     setErrorMessage('')
 
     const wasSent = sendMessage({
@@ -222,6 +246,17 @@ function App() {
       row: rowIndex,
       column: columnIndex,
     })
+  }
+
+  async function handleCopyRoomCode() {
+    if (!roomCode) return
+
+    try {
+      await navigator.clipboard.writeText(roomCode)
+      setNotification('Код комнаты скопирован')
+    } catch {
+      setNotification('Не удалось скопировать код комнаты')
+    }
   }
 
   function handleLeaveRoom() {
@@ -273,14 +308,14 @@ function App() {
   return (
       <main className="game-menu unselectable">
         <div className="menu-side-wrapper">
-          <img className='crab-game-logo' src="../public/images/Crab-game-logo.png" alt="Crab game" />
+          <img className='crab-game-logo' src="/images/Crab-game-logo.png" alt="Crab game" />
 
           <div className="menu-profile-card">
             <img src={avatar.src} alt={avatar.label} className='player__avatar'/>
 
             <div className="player__nickname">
               <p>{profile.nickname}</p>
-              <img className='profile-divider-line' src="../../public/images/ui/line-profile.png" alt="divider-line" />
+              <img className='profile-divider-line' src="/images/ui/line-profile.png" alt="" />
             </div>
           </div>
         </div>
@@ -291,6 +326,16 @@ function App() {
             setGamePhase('lobby')
           }}
         />
+
+        {notification && (
+          <div
+            className="notification"
+            role="status"
+            aria-live="polite"
+          >
+            {notification}
+          </div>
+        )}
       </main>
     )
   }
@@ -313,7 +358,10 @@ function App() {
           setGamePhase={setGamePhase}
           setErrorMessage={setErrorMessage}
           onLeaveRoom={handleLeaveRoom}
+          onCopyRoomCode={handleCopyRoomCode}
           isLeavingRoom={isLeavingRoom}
+          notification={notification}
+          isLobbyRequestPending={isLobbyRequestPending}
         />
       </main>
     )
