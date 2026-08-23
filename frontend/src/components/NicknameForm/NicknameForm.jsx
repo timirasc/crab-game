@@ -10,10 +10,13 @@ import {
 const MIN_NICKNAME_LENGTH = 2
 const MAX_NICKNAME_LENGTH = 10
 
-function NicknameForm({ onSubmit }) {
-  const [nickname, setNickname] = useState('')
-  const [selectedAvatarId, setSelectedAvatarId] =
-    useState(DEFAULT_AVATAR_ID)
+function NicknameForm({
+  gamePhase,
+  initialProfile = null,
+  onSubmit 
+}) {
+  const [nickname, setNickname] = useState( initialProfile?.nickname ?? '' )
+  const [selectedAvatarId, setSelectedAvatarId] = useState(initialProfile?.avatarId ?? DEFAULT_AVATAR_ID)
   const [error, setError] = useState('')
 
   function handleSubmit(event) {
@@ -36,7 +39,7 @@ function NicknameForm({ onSubmit }) {
       MAX_NICKNAME_LENGTH
     ) {
       setError(
-        'Никнейм должен содержать максимум 20 символов',
+        'Никнейм должен содержать максимум 10 символов',
       )
       return
     }
@@ -50,7 +53,9 @@ function NicknameForm({ onSubmit }) {
   return (
     <section className="nickname-form unselectable">
       <h2>
-        Для начала игры введите ник и выберите аватар
+        {gamePhase === "settings"
+            ? "Настройки"
+            : "Для начала игры введите ник и выберите аватар"}
       </h2>
 
       <form onSubmit={handleSubmit}>
@@ -118,7 +123,9 @@ function NicknameForm({ onSubmit }) {
           className="nickname-form__submit"
           type="submit"
         >
-          Продолжить
+          {gamePhase === "settings"
+            ? "Сохранить"
+            : "Продолжить"}
         </button>
       </form>
     </section>

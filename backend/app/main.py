@@ -79,7 +79,22 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             message = await websocket.receive_json()
+
+            if not isinstance(message, dict):
+                await send_error(
+                    websocket,
+                    'Сообщение должно быть JSON-объектом',
+                )
+                continue
+
             message_type = message.get('type')
+
+            if not isinstance(message_type, str):
+                await send_error(
+                    websocket,
+                    'Тип сообщения не указан',
+                )
+                continue
 
             if message_type == 'create_room':
                 if room_manager.find_player(websocket):

@@ -5,7 +5,9 @@ import {
   useState,
 } from 'react'
 
-const WEBSOCKET_URL = 'ws://127.0.0.1:8000/ws'
+const WEBSOCKET_URL =
+  import.meta.env.VITE_WEBSOCKET_URL ||
+  'ws://127.0.0.1:8000/ws'
 
 export function useGameSocket(onMessage) {
   const socketRef = useRef(null)

@@ -32,8 +32,8 @@ function Lobby({
   if (gamePhase === 'waiting') {
     return (
       <section className="lobby">
-        <h2>Ожидаем соперника</h2>
-        <p>Код комнаты:</p>
+        <h2 className='unselectable'>Ожидаем соперника</h2>
+        <p className='unselectable'>Код комнаты:</p>
         <strong className="room-code">
           <button
             className="room-code"
@@ -43,10 +43,11 @@ function Lobby({
           >
             {roomCode}
           </button>
+          <img className='code-divider-line unselectable' src="/images/ui/line-profile.png" alt="" />
         </strong>
-        <p>Нажмите на код для копирования. Передайте его второму игроку</p>
+        <p className='unselectable'>Нажмите на код для копирования. Передайте его второму игроку</p>
         <button
-          className="back-to-menu"
+          className="back-to-menu unselectable"
           type="button"
           disabled={isLeavingRoom}
           onClick={onLeaveRoom}
@@ -57,7 +58,7 @@ function Lobby({
         </button>
         {notification && (
           <div
-            className="notification"
+            className="notification unselectable"
             role="status"
             aria-live="polite"
           >
@@ -70,7 +71,7 @@ function Lobby({
   }
 
   return (
-    <section className="lobby">
+    <section className="lobby unselectable">
       <button
         className="lobby-button create-room"
         type="button"

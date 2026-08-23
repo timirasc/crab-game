@@ -187,6 +187,7 @@ function App() {
 
     localStorage.removeItem('crab-game-nickname')
     setProfile(newProfile)
+    setGamePhase('menu')
   }
 
   function handleCreateRoom() {
@@ -200,7 +201,9 @@ function App() {
       avatarId: profile.avatarId,
     })
 
-    if (!wasSent) {
+    if (wasSent) {
+      setIsLobbyRequestPending(true)
+    } else {
       setErrorMessage('Нет соединения с сервером')
     }
   }
@@ -217,7 +220,9 @@ function App() {
       avatarId: profile.avatarId,
     })
 
-    if (!wasSent) {
+    if (wasSent) {
+      setIsLobbyRequestPending(true)
+    } else {
       setErrorMessage('Нет соединения с сервером')
     }
   }
@@ -295,7 +300,6 @@ function App() {
   if (!profile) {
     return (
       <main className="game">
-
         <NicknameForm
           onSubmit={handleProfileSubmit}
         />
@@ -303,9 +307,21 @@ function App() {
     )
   }
 
+  if (gamePhase === 'settings') {
+    return (
+      <main className="game">
+        <NicknameForm
+          gamePhase={gamePhase}
+          initialProfile={profile}
+          onSubmit={handleProfileSubmit}
+        />
+      </main>
+    )
+  }
+
   if (gamePhase === 'menu') {
-  const avatar = getAvatar(profile.avatarId)
-  return (
+    const avatar = getAvatar(profile.avatarId)
+    return (
       <main className="game-menu unselectable">
         <div className="menu-side-wrapper">
           <img className='crab-game-logo' src="/images/Crab-game-logo.png" alt="Crab game" />
@@ -325,6 +341,10 @@ function App() {
             setErrorMessage('')
             setGamePhase('lobby')
           }}
+          onSettingsClick={() => {
+            setErrorMessage('')
+            setGamePhase('settings')
+          }}
         />
 
         {notification && (
@@ -343,11 +363,6 @@ function App() {
   if (gamePhase !== 'playing') {
     return (
       <main className="game">
-
-        {/* <p className={`connection connection--${connectionStatus}`}>
-          {connectionLabels[connectionStatus]}
-        </p> */}
-
         <Lobby
           connectionStatus={connectionStatus}
           gamePhase={gamePhase}

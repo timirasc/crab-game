@@ -231,7 +231,7 @@
   align-items: center;
   gap: 8px;
 
-  padding: min(70px, 20vw) min(13vw, 55px) min(55px, calc(8dvh - 12px));
+  padding: min(50px, 20vw) min(7vw, 55px) min(55px, calc(8dvh - 12px));
   border-radius: 12px;
 
   background-image: url(/images/bg-lobby.png);
@@ -257,13 +257,42 @@
   font-weight: 400;
   -webkit-text-stroke: 0.3px #E1BC81;
   text-align: center;
+  text-transform: uppercase;
+  font-size: 22px;
+  margin-bottom: 10px;
 }
 .lobby {
   text-align: center;
 }
 
-.join-form {
+.lobby p {
+  font-family: 'Goose';
+  font-weight: 400;
+  line-height: 1lh;
+  color: #684E33;
+}
+strong.room-code {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -10px;
+}
+
+button.room-code {
+  font-family: 'RubikOne';
+  font-weight: normal;
+  color: #4A2F17;
+  -webkit-text-stroke: 0.3px #E1BC81;
+}
+
+.code-divider-line {
   width: 100%;
+  height: 2px;
+  margin-top: -5px;
+}
+
+.join-form {
+  width: 90%;
   height: auto;
   display: flex;
   gap: 4px;
@@ -296,7 +325,6 @@
   font-size: clamp(16px, 3vh, 20px);
   font-family: 'Goose';
   font-weight: 400;
-  
 }
 
 .join-form input:focus {
@@ -324,7 +352,7 @@
 }
 
 .lobby-button.create-room {
-  width: 100%;
+  width: 90%;
 
   background-image: url(/images/ui/room-btn-border.png);
   background-repeat: no-repeat;
@@ -356,6 +384,8 @@
 .room-code {
   font-size: 32px;
   letter-spacing: 6px;
+  background-color: transparent;
+  border: none;
 }
 
 .lobby-error {
@@ -672,11 +702,6 @@ img.profile-divider-line  {
   transform: rotate(-5deg);
 }
 
-.main-menu__button:hover:not(:disabled),
-.back-to-menu:hover {
-  transform: scale(1.03);
-}
-
 .main-menu__button:disabled {
   cursor: not-allowed;
   opacity: 1;
@@ -950,16 +975,26 @@ img.profile-divider-line  {
   /* Экран комнаты */
   .lobby {
     width: min(45vw, 600px);
-    padding: 70px 65px 40px;
+    padding: 70px 25px 40px;
     gap: 20px;
   }
-  .lobby-button.create-room, .join-form input {
+  .lobby h2 {
+    margin-top: -20px;
+  }
+  .lobby-button.create-room, .join-form {
+    width: 75%;
+  }
+  .lobby-button.create-room, .join-form input, .lobby h2 {
     font-size: 25px;
+  }
+  button.room-code {
+    cursor: pointer;
+    font-size: 40px;
   }
   .lobby .back-to-menu {
     font-size: 35px;
   }
-  .lobby span {
+  .lobby span, .lobby p {
     font-size: 20px;
   }
   .lobby-button[type="submit"] {
@@ -1053,6 +1088,27 @@ img.profile-divider-line  {
     font-size: 4vh;
     padding: 2vh 6vh;
   }
+  .main-menu__button:hover:not(:disabled), .main-menu__button:focus-visible {
+    transition: .3s;
+    color: wheat;
+    text-shadow: 
+      10px 0px 2em #ffe4c7, 
+      -10px 0px 1em #ffe4c7;
+  }
+  .main-menu__button:focus-visible {
+    outline: none;
+  }
+  .main-menu__button.pvp:hover:not(:disabled), .main-menu__button.pvp:focus-visible {
+    transform: rotate(0);
+  }
+  .main-menu__button.settings:hover:not(:disabled), .main-menu__button.settings:focus-visible {
+    transform: rotate(-3deg);
+  }
+
+  .back-to-menu:hover {
+    transform: scale(1.03);
+  }
+    
   .crab-game-logo {
     height: auto;
     width: 30vw;
@@ -1076,17 +1132,23 @@ img.profile-divider-line  {
   and (pointer: fine) {
   /* Экран комнаты */
   .lobby {
-    padding: 90px 75px 70px;
+    padding: 90px 25px 70px;
     gap: 20px;
   }
-  .lobby-button.create-room, .join-form input {
+  .lobby-button.create-room, .join-form input, .lobby h2 {
     font-size: 35px;
+  }
+  button.room-code {
+    font-size: 50px;
   }
   .lobby .back-to-menu {
     font-size: 40px;
   }
-  .lobby span {
+  .lobby span, .lobby p {
     font-size: 30px;
+  }
+  .lobby p {
+    line-height: 1.5lh;
   }
   .lobby-button[type="submit"] {
     width: 66px;
