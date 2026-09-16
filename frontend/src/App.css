@@ -40,15 +40,20 @@
   aspect-ratio: 1;
   perspective: min(120vw, 950px);
   perspective-origin: center 30%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-flow: column nowrap;
+  align-self: center;
+  margin-top: -15vmin;
 }
 
 .board-grid {
   position: absolute;
-  top: 4.2%;
-  right: 4.2%;
-  bottom: 6.8%;
-  left: 4.2%;
-
+  top: 5.4%;
+  right: 5.7%;
+  bottom: 8%;
+  left: 5.9%;
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   grid-template-rows: repeat(6, minmax(0, 1fr));
@@ -84,33 +89,59 @@
   aspect-ratio: 1;
   padding: 0;
 
-  border: 3px solid rgb(0 0 0 / 25%);
-  border-radius: 50%;
+  border: 0;
+  border-radius: 0;
+  outline: 0;
+  background: transparent;
 
   transform: translate(-50%, -50%);
 
+  overflow: visible;
   pointer-events: auto;
   cursor: pointer;
+}
+.crab__image {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+
+  width: 150%;
+  max-width: none;
+  height: auto;
+
+  display: block;
+
+  transform:
+    translateX(-50%)
+    rotateX(-40deg);
+
+  transform-origin: center bottom;
+
+  pointer-events: none;
+  user-select: none;
 
   transition:
-    left 500ms cubic-bezier(0.22, 1, 0.36, 1),
-    top 500ms cubic-bezier(0.22, 1, 0.36, 1),
     transform 150ms ease,
-    box-shadow 150ms ease;
+    filter 150ms ease;
 }
 
-.crab--blue {
-  background-color: #42b8c5;
+.crab:hover:not(:disabled) .crab__image,
+.crab--selected .crab__image {
+  transform:
+    translateX(-50%)
+    rotateX(-40deg)
+    scale(1.08);
 }
 
-.crab--red {
-  background-color: #e8663f;
+.crab--selected .crab__image {
+  filter:
+    drop-shadow(0 0 3px white)
+    drop-shadow(0 0 7px #2f241c);
 }
 
-.crab:hover:not(:disabled) {
-  transform: translate(-50%, -50%) scale(1.08);
+.crab:disabled {
+  cursor: default;
 }
-
 .crab:disabled {
   cursor: default;
 }
@@ -120,6 +151,95 @@
   box-shadow:
     0 0 0 5px #fff,
     0 0 0 9px #2f241c;
+}
+
+  /* Секция Игры */
+.game-room {
+  background-image: url(/images/bg-game-9-16.png);
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding: 0 24px;
+  justify-content: center;
+  margin-top: 0%;
+  display: grid;
+  align-items: start;
+  grid-template-rows: 1fr 2fr;
+}
+/* .players-boaard-wrapper, .players-board {
+  border: 3px solid black;
+} */
+
+.players-boaard-wrapper {
+  display:grid;
+  width: min(100vw, 600px);
+  justify-self: center;
+}
+.players-boaard-wrapper-pc {
+    display: none;
+  }
+.players-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0 5vw;
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+}
+.player-info {
+  display: grid;
+}
+img.avatar-frame {
+  width: 100%;
+  z-index: 2;
+}
+.player-info .avatar {
+  margin-top: -100%;
+  background-image: url("/images/avatars/shark/portrait.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 80%;
+  z-index: 1;
+}
+.nickname-board {
+  text-align: center;
+  background-image: url(/images/ui/players-board/nickname-plaque-blank.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  padding: 14px;
+  z-index: 1;
+  padding: 15px 12px 12px 12px;
+  margin-top: -20px;
+  font-family: "Goose";
+  font-weight: 700;
+}
+.current-player-info {
+  z-index: 1;
+  display: grid;
+}
+.current-player-wrapper  {
+  display: grid;
+}
+.current-player-wrapper img {
+  width: 85%;
+  filter: hue-rotate(0.04turn);
+  grid-row: 2 / 3;
+  margin-bottom: -7%;
+  justify-self: center;
+  transition: transform .3s ease;
+}
+.current-player-wrapper img:hover {
+  filter: hue-rotate(0.57turn) brightness(95%);
+  transform: rotateZ(180deg);
+}
+.board-bg {
+  background-image: url("/images/ui/players-board/players-board-bg.png");
+  background-position: center 60%;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  z-index: 0;
 }
 
   /* Стрелки движения */
@@ -922,7 +1042,10 @@ img.profile-divider-line  {
     width: 40vw;
     margin-top: -15vh;
   }
-
+  /* Секция игры */
+  .players-boaard-wrapper {
+    display: none;
+  }
 }
                                                 /* Мобильные горизонтально*/
 @media (orientation: landscape) 
@@ -965,6 +1088,11 @@ img.profile-divider-line  {
   /* Главное меню */
   .game-menu {
     gap: 5vw
+  }
+
+  /* Секция игры */
+  .players-boaard-wrapper {
+    display: none;
   }
 }
 
@@ -1124,6 +1252,116 @@ img.profile-divider-line  {
     font-weight: 400;
     margin-bottom: 8px;
   }
+  
+  /* Секция игры */
+  .players-boaard-wrapper {
+    display: none;
+  }
+  .players-boaard-wrapper-pc {
+    display: flex;
+    max-height: 45vh;
+    position: absolute;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    left: 0;
+    padding: 0 7vw;
+  }
+  .players-boaard-wrapper-pc .player-info img.avatar-frame {
+    max-height: 45vh;
+  }
+  .players-boaard-wrapper-pc .player-info img.avatar {
+    width: 80%;
+    margin-top: auto;
+    position: absolute;
+    left: 10%;
+    top: 10%;
+  }
+  .avatar-wrapper {
+    width: auto;
+    aspect-ratio: 1 / 1;
+    position: relative;
+    margin-top: -100%;
+    z-index: 1;
+  }
+  .avatar-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    background-color: #000000;
+    z-index: 2;
+    opacity: .5;
+    transition: opacity .3s ease;
+  }
+  .player--active .avatar-wrapper::before {
+    opacity: 0;
+  }
+  .player--active .avatar-wrapper.player__blue::after {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    width: 60%;
+    height: 60%;
+    border-radius: 50%;
+    background-color: rgb(66 170 197);
+    box-shadow: 0 0 10vh 5vh rgb(66 170 197);
+    z-index: -1;
+
+    animation: pulse-glow 2s infinite ease-in-out;
+  }
+  .player--active .avatar-wrapper.player__red::after {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    width: 60%;
+    height: 60%;
+    border-radius: 50%;
+    background-color: rgb(255, 68, 68);
+    box-shadow: 0 0 10vh 5vh rgb(255, 68, 68);
+    z-index: -1;
+
+    animation: pulse-glow 2s infinite ease-in-out;
+  }
+
+  .players-boaard-wrapper-pc .player-info {
+    transform: translateY(-15vh);
+    transition: all .3s ease;
+  }
+  .players-boaard-wrapper-pc .player-info.player--active {
+    transform: translateY(-4vh);
+  }
+  
+  .board-scene {
+    width: min(120vh, 90vw);
+    perspective: min(120vh, 90vw);
+    margin-top: 0;
+  }
+  .board {
+    top: -30vh;
+    transform: rotateX(50deg);
+  }
+  .game-room {
+    background-image: url(/images/crab-game-bg.png);
+    max-height: 100vh;
+    max-height: 100dvh;
+    box-shadow: inset 0px 0px 20vh 7vh rgba(0, 0, 0, 0.3);
+  }
+  .nickname-board {
+    padding: 2vh;
+    font-size: 2.5vh;
+    margin-top: -2.5vh;
+  }
+  .crab img {
+    width: 100%;
+    perspective: none;
+  }
 }
 
                                               /* Обычные ноутбуки и десктопы */
@@ -1172,4 +1410,27 @@ img.profile-divider-line  {
                                                   /* Большие мониторы */
 @media (min-width: 1536px) and (hover: hover) and (pointer: fine) {
   /* Стили отображения ввода профиля */
+}
+
+
+
+
+
+
+
+
+/* Анимация пульсации */
+@keyframes pulse-glow {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2); /* Расширение свечения */
+    opacity: 1;            /* Максимальная яркость */
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
 }

@@ -69,7 +69,7 @@ function Board({
 
               return (
                 <button
-                  className={`crab crab--${crab.color} ${
+                  className={`crab ${
                     isSelected ? 'crab--selected' : ''
                   }`}
                   style={{
@@ -90,7 +90,18 @@ function Board({
                       crab,
                     )
                   }
-                />
+                >
+                  <img
+                    className="crab__image"
+                    src={
+                      crab.color === 'blue'
+                        ? '/images/crabs/Crab-blue.png'
+                        : '/images/crabs/Crab-red.png'
+                    }
+                    alt=""
+                    draggable="false"
+                  />
+                </button>
               )
             })}
           </div>

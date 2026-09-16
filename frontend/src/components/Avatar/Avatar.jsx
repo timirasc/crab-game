@@ -13,6 +13,7 @@ function Avatar({
       className={`avatar ${className}`}
       src={avatar.src}
       alt={avatar.label}
+      draggable="false"
     />
   )
 }

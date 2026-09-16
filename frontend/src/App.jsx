@@ -383,67 +383,59 @@ function App() {
   }
 
   return (
-    <main className="game">
-      <div className="players">
-        <div
-          className={`player player--blue ${
-            currentPlayer === 'blue' ? 'player--active' : ''
-          }`}
-        >
-          <Avatar
-            avatarId={players.blue?.avatarId}
-            className="player__avatar"
-          />
+    <main className="game game-room">
+      <div className="players-boaard-wrapper">
 
-          <span className="player__nickname">
-            {players.blue?.nickname}
-          </span>
+        <div className="players-board">
+          <div className="player-info">
+            <img src="/images/ui/players-board/avatar-chain-frame.png" alt="" className="avatar-frame" />
+            <div className="avatar"></div>
+            <div className="nickname-board">testtest01</div>
+          </div>
 
-          {playerColor === 'blue' && (
-            <span className="player__you">Вы</span>
-          )}
+          <div className="current-player-info">
+            <div className="current-player-wrapper">
+              <img src="/images/ui/boards/board-red.png" alt="" />
+            </div>
+          </div>
+
+          <div className="player-info">
+            <img src="/images/ui/players-board/avatar-chain-frame.png" alt="" className="avatar-frame" />
+            <div className="avatar"></div>
+            <div className="nickname-board">testtest02</div>
+          </div>
         </div>
 
-        <div
-          className={`player player--red ${
-            currentPlayer === 'red' ? 'player--active' : ''
-          }`}
-        >
-        <Avatar
-          avatarId={players.red?.avatarId}
-          className="player__avatar"
-        />
-        <span className="player__nickname">
-          {players.red?.nickname}
-        </span>
+        <div className="board-bg"></div>
 
-        {playerColor === 'red' && (
-          <span className="player__you">Вы</span>
-        )}
       </div>
-    </div>
-      <p className={`connection connection--${connectionStatus}`}>
-        {connectionLabels[connectionStatus]}
-      </p>
-      <p className="current-player">
-        {winner
-          ? `Победили ${winner === 'blue' ? 'синие' : 'красные'}!`
-          : isDraw
-            ? 'Ничья!'
-            : `Ход: ${
-                currentPlayer === 'blue' ? 'синих' : 'красных'
-              }`}
-      </p>
-      {errorMessage && (
-        <p className="lobby-error">{errorMessage}</p>
-      )}
-      {skippedPlayer && !winner && (
-        <p className="skip-message">
-          {skippedPlayer === 'blue' ? 'Синие' : 'Красные'} не могут
-          сделать ход и пропускают его
-        </p>
-      )}
-      
+
+      <div className="players-boaard-wrapper-pc">
+        {/* синий */}
+        <div className={`player-info ${currentPlayer === 'blue' ? 'player--active' : ''}`}>
+          <img src="/images/ui/players-board/avatar-chain-frame-long.png" alt="" className="avatar-frame" draggable="false" />
+          <div className="avatar-wrapper player__blue">
+            <Avatar
+              avatarId={players.blue?.avatarId}
+              className="player__avatar"
+            />
+          </div>
+          
+          <div className="nickname-board">{players.blue?.nickname}</div>
+        </div>
+
+        {/* красный */}
+        <div className={`player-info ${currentPlayer === 'red' ? 'player--active' : ''}`}>
+          <img src="/images/ui/players-board/avatar-chain-frame-long.png" alt="" className="avatar-frame" draggable="false" />
+          <div className="avatar-wrapper player__red">
+            <Avatar
+              avatarId={players.red?.avatarId}
+              className="player__avatar"
+            />
+          </div>
+          <div className="nickname-board">{players.red?.nickname}</div>
+        </div>
+      </div>
 
       <Board
         board={board}
