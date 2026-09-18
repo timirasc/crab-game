@@ -49,19 +49,12 @@ function getStoredProfile() {
   }
 }
 
-const connectionLabels = {
-  connecting: 'Подключение…',
-  connected: 'Подключено',
-  disconnected: 'Соединение закрыто',
-  error: 'Ошибка соединения',
-}
-
 function App() {
   const [board, setBoard] = useState(INITIAL_BOARD)
   const [selectedCrab, setSelectedCrab] = useState(null)
   const [currentPlayer, setCurrentPlayer] = useState(null)
   const [winner, setWinner] = useState(null)
-  const [skippedPlayer, setSkippedPlayer] = useState(null)
+  const [, setSkippedPlayer] = useState(null)
   const [isDraw, setIsDraw] = useState(false)
   const [gamePhase, setGamePhase] = useState('menu')
   const [roomCode, setRoomCode] = useState('')

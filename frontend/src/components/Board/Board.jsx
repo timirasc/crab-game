@@ -22,13 +22,16 @@ function Board({
       ]
     }),
   )
+  .sort((firstCrab, secondCrab) =>
+    firstCrab.id.localeCompare(secondCrab.id),
+  )
 
   return (
     <div className="board-scene">
       <div className="board">
         <div className="board-grid">
           {board.map((row, rowIndex) =>
-            row.map((_, columnIndex) => {
+              row.map((crab, columnIndex) => {
               const isSelectedCell =
                 selectedCrab?.row === rowIndex &&
                 selectedCrab?.column === columnIndex
@@ -38,6 +41,25 @@ function Board({
                   className="cell"
                   key={`${rowIndex}-${columnIndex}`}
                 >
+                  {crab !== null && (
+                    <button
+                      className="crab-hitbox"
+                      type="button"
+                      disabled={
+                        isGameOver ||
+                        crab.color !== currentPlayer
+                      }
+                      aria-label={`${crab.color} crab`}
+                      onClick={() =>
+                        onCrabClick(
+                          rowIndex,
+                          columnIndex,
+                          crab,
+                        )
+                      }
+                    />
+                  )}
+
                   {isSelectedCell &&
                     availableMoves.map((move) => (
                       <button
@@ -48,8 +70,7 @@ function Board({
                         key={move.name}
                         aria-label={`Move ${move.name}`}
                         onClick={() => onMove(move)}
-                      >
-                      </button>
+                      />
                     ))}
                 </div>
               )
@@ -68,40 +89,31 @@ function Board({
                 ((crab.row + 0.5) / BOARD_SIZE) * 100
 
               return (
-                <button
-                  className={`crab ${
-                    isSelected ? 'crab--selected' : ''
+                <div
+                  className={`crab-piece ${
+                    isSelected ? 'crab-piece--selected' : ''
                   }`}
                   style={{
                     left: `${left}%`,
                     top: `${top}%`,
+                    zIndex: crab.row + 2,
                   }}
-                  type="button"
                   key={crab.id}
-                  disabled={
-                    isGameOver ||
-                    crab.color !== currentPlayer
-                  }
-                  aria-label={`${crab.color} crab`}
-                  onClick={() =>
-                    onCrabClick(
-                      crab.row,
-                      crab.column,
-                      crab,
-                    )
-                  }
+                  aria-hidden="true"
                 >
-                  <img
-                    className="crab__image"
-                    src={
-                      crab.color === 'blue'
-                        ? '/images/crabs/Crab-blue.png'
-                        : '/images/crabs/Crab-red.png'
-                    }
-                    alt=""
-                    draggable="false"
-                  />
-                </button>
+                  <span className="crab__visual">
+                    <img
+                      className="crab__sprite-sheet"
+                      src={
+                        crab.color === 'blue'
+                          ? '/images/crabs/Crab-blue-animation.png'
+                          : '/images/crabs/Crab-red-animation.png'
+                      }
+                      alt=""
+                      draggable="false"
+                    />
+                  </span>
+                </div>
               )
             })}
           </div>
