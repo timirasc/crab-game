@@ -14,6 +14,7 @@ import { isValidAvatarId } from './data/avatars'
 import Avatar from './components/Avatar/Avatar'
 import MainMenu from './components/MainMenu/MainMenu'
 import { getAvatar } from './data/avatars'
+import ConnectionModal from './components/ConnectionModal/ConnectionModal'
 
 
 
@@ -69,6 +70,9 @@ function App() {
   const [isLeavingRoom, setIsLeavingRoom] = useState(false)
   const [notification, setNotification] = useState('')
   const [isLobbyRequestPending, setIsLobbyRequestPending] = useState(false)
+  const [matchPaused, setMatchPaused] = useState(false)
+  const [reconnectDeadline, setReconnectDeadline] = useState(null)
+  const [endedReason, setEndedReason] = useState(null)
   
 
   useEffect(() => {
@@ -84,7 +88,43 @@ function App() {
   }, [notification])
   
   const handleServerMessage = useCallback((message) => {
+    if (message.type === 'connection_lost') {
+      setSelectedCrab(null)
+      setIsMovePending(false)
+      setIsLobbyRequestPending(false)
+      setIsLeavingRoom(false)
+      return
+    }
+
+    if (message.type === 'resume_rejected') {
+      setGamePhase('menu')
+      setRoomCode('')
+      setPlayerColor(null)
+      setMatchPaused(false)
+      setReconnectDeadline(null)
+      setEndedReason(null)
+      setNotification(message.message)
+      return
+    }
+
+    if (['game_started', 'session_resumed', 'game_state', 'match_status'].includes(message.type)) {
+      setMatchPaused(message.paused)
+      const remaining = Object.values(message.reconnectRemainingMs || {})
+      setReconnectDeadline(remaining.length ? Date.now() + Math.min(...remaining) : null)
+      setEndedReason(message.endedReason)
+      setBoard(message.board)
+      setCurrentPlayer(message.currentPlayer)
+      setWinner(message.winner)
+      setIsDraw(message.isDraw)
+      setSelectedCrab(null)
+      setIsMovePending(false)
+      setErrorMessage('')
+    }
+
     if (message.type === 'room_left') {
+      setMatchPaused(false)
+      setEndedReason(null)
+      setReconnectDeadline(null)
       setGamePhase('menu')
       setRoomCode('')
       setPlayerColor(null)
@@ -98,6 +138,10 @@ function App() {
     }
 
     if (message.type === 'room_created') {
+      setMatchPaused(false)
+      setEndedReason(null)
+      setWinner(null)
+      setIsDraw(false)
       setIsLobbyRequestPending(false)
       setRoomCode(message.roomCode)
       setPlayerColor(message.color)
@@ -105,7 +149,7 @@ function App() {
       setErrorMessage('')
     }
 
-    if (message.type === 'game_started') {
+    if (message.type === 'game_started' || message.type === 'session_resumed') {
       setIsLobbyRequestPending(false)
       setRoomCode(message.roomCode)
       setPlayerColor(message.color)
@@ -117,7 +161,7 @@ function App() {
       setSkippedPlayer(null)
       setSelectedCrab(null)
       setIsMovePending(false)
-      setGamePhase('playing')
+      setGamePhase(message.currentPlayer === null ? 'waiting' : 'playing')
       setErrorMessage('')
     }
 
@@ -140,8 +184,7 @@ function App() {
     }
 
     if (
-      message.type === 'opponent_left' ||
-      message.type === 'opponent_disconnected'
+      message.type === 'opponent_left'
     ) {
       setGamePhase('menu')
       setRoomCode('')
@@ -161,10 +204,14 @@ function App() {
   const {
     connectionStatus,
     sendMessage,
+    forgetSession,
   } = useGameSocket(handleServerMessage)
 
+  const movesBlocked = connectionStatus !== 'connected' || matchPaused ||
+    winner !== null || isDraw || isMovePending || endedReason !== null ||
+    playerColor !== currentPlayer
 
-  const availableMoves = selectedCrab
+  const availableMoves = selectedCrab && !movesBlocked
   ? getAvailableMoves(
       board,
       selectedCrab.row,
@@ -222,6 +269,7 @@ function App() {
 
   function handleCrabClick(rowIndex, columnIndex, crab) {
     if (
+      movesBlocked ||
       winner ||
       isDraw ||
       isMovePending ||
@@ -272,7 +320,7 @@ function App() {
     }
   }
   function handleMove(move) {
-    if (!selectedCrab || isMovePending) return
+    if (!selectedCrab || movesBlocked) return
 
     const wasSent = sendMessage({
       type: 'move',
@@ -289,6 +337,24 @@ function App() {
   }
 }
 
+  function handleResultExit() {
+    sendMessage({ type: 'leave_room' })
+    forgetSession()
+    setGamePhase('menu')
+    setRoomCode('')
+    setPlayerColor(null)
+    setSelectedCrab(null)
+    setMatchPaused(false)
+    setEndedReason(null)
+    setReconnectDeadline(null)
+  }
+
+  const result = endedReason ? {
+    title: isDraw ? 'Матч завершён без победителя' : winner === playerColor ? 'Победа!' : 'Поражение',
+    description: endedReason === 'reconnect_timeout'
+      ? winner === playerColor ? 'Соперник не переподключился за 60 секунд.' : 'Время переподключения истекло.'
+      : endedReason === 'opponent_left' ? 'Игрок покинул матч.' : 'Матч завершён.',
+  } : null
 
   if (!profile) {
     return (
@@ -435,15 +501,18 @@ function App() {
         currentPlayer={currentPlayer}
         selectedCrab={selectedCrab}
         availableMoves={availableMoves}
-        isGameOver={
-          winner !== null ||
-          isDraw ||
-          isMovePending ||
-          playerColor !== currentPlayer
-        }
+        isGameOver={movesBlocked}
         onCrabClick={handleCrabClick}
         onMove={handleMove}
       />
+      {(result || matchPaused || connectionStatus !== 'connected') && (
+        <ConnectionModal
+          offline={connectionStatus !== 'connected'}
+          deadline={reconnectDeadline}
+          result={result}
+          onExit={handleResultExit}
+        />
+      )}
     </main>
   )
 }
