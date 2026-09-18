@@ -122,11 +122,10 @@ class RoomManagerTests(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertTrue(was_removed)
-        self.assertNotIn(room.code, self.manager.rooms)
-        self.assertEqual(
-            self.red_socket.messages,
-            [{'type': 'opponent_left'}],
-        )
+        self.assertEqual(room.game.winner, 'red')
+        self.assertEqual(room.ended_reason, 'opponent_left')
+        self.assertEqual(self.red_socket.messages[-1]['endedReason'], 'opponent_left')
+        self.manager._delete_room(room)
 
     async def test_unknown_player_cannot_leave_room(self):
         unknown_socket = FakeWebSocket()

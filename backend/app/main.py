@@ -1,3 +1,6 @@
+import asyncio
+from json import JSONDecodeError
+
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 from app.room_manager import RoomManager
@@ -78,7 +81,11 @@ async def websocket_endpoint(websocket: WebSocket):
 
     try:
         while True:
-            message = await websocket.receive_json()
+            try:
+                message = await asyncio.wait_for(websocket.receive_json(), timeout=20)
+            except JSONDecodeError:
+                await send_error(websocket, 'Некорректный JSON')
+                continue
 
             if not isinstance(message, dict):
                 await send_error(
@@ -94,6 +101,19 @@ async def websocket_endpoint(websocket: WebSocket):
                     websocket,
                     'Тип сообщения не указан',
                 )
+                continue
+
+            if message_type == 'ping':
+                await websocket.send_json({'type': 'pong'})
+                continue
+
+            if message_type == 'resume_session':
+                try:
+                    await room_manager.resume(
+                        websocket, message.get('roomCode'), message.get('sessionToken'),
+                    )
+                except ValueError as error:
+                    await websocket.send_json({'type': 'resume_rejected', 'message': str(error)})
                 continue
 
             if message_type == 'create_room':
@@ -126,6 +146,7 @@ async def websocket_endpoint(websocket: WebSocket):
                         'type': 'room_created',
                         'roomCode': room.code,
                         'color': 'blue',
+                        'sessionToken': room.tokens['blue'],
                     }
                 )
 
@@ -163,37 +184,12 @@ async def websocket_endpoint(websocket: WebSocket):
                     await send_error(websocket, str(error))
                     continue
 
-                game_state = room.game.to_message()
-
-                players = {
-                    'blue': {
-                        'nickname': room.blue_nickname,
-                        'avatarId': room.blue_avatar_id,
-                    },
-                    'red': {
-                        'nickname': room.red_nickname,
-                        'avatarId': room.red_avatar_id,
-                    },
-                }
-
                 await room.blue_player.send_json(
-                    {
-                        'type': 'game_started',
-                        'roomCode': room.code,
-                        'color': 'blue',
-                        'players': players,
-                        **game_state,
-                    }
+                    room_manager.snapshot(room, 'blue', 'game_started')
                 )
 
                 await room.red_player.send_json(
-                    {
-                        'type': 'game_started',
-                        'roomCode': room.code,
-                        'color': 'red',
-                        'players': players,
-                        **game_state,
-                    }
+                    room_manager.snapshot(room, 'red', 'game_started')
                 )
 
             elif message_type == 'leave_room':
@@ -242,24 +238,11 @@ async def websocket_endpoint(websocket: WebSocket):
                     continue
 
                 try:
-                    skipped_player = room.game.make_move(
-                        player_color,
-                        row,
-                        column,
-                        direction,
-                    )
+                    await room_manager.make_move(websocket, row, column, direction)
                 except ValueError as error:
                     await send_error(websocket, str(error))
                     continue
 
-                await room_manager.broadcast(
-                    room,
-                    {
-                        'type': 'game_state',
-                        **room.game.to_message(),
-                        'skippedPlayer': skipped_player,
-                    },
-                )
 
             else:
                 await send_error(
@@ -267,7 +250,11 @@ async def websocket_endpoint(websocket: WebSocket):
                     'Неизвестный тип сообщения',
                 )
 
-    except WebSocketDisconnect:
+    except (WebSocketDisconnect, asyncio.TimeoutError, OSError):
         pass
     finally:
         await room_manager.remove_player(websocket)
+        try:
+            await websocket.close()
+        except (RuntimeError, OSError):
+            pass
