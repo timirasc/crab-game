@@ -189,9 +189,6 @@
   align-items: start;
   grid-template-rows: 1fr 2fr;
 }
-/* .players-boaard-wrapper, .players-board {
-  border: 3px solid black;
-} */
 
 .players-boaard-wrapper {
   display:grid;
@@ -914,28 +911,6 @@ img.profile-divider-line  {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                                                       /* Небольшие планшеты вертикально*/
 
 @media (orientation: portrait) 
@@ -1430,7 +1405,7 @@ img.profile-divider-line  {
 
                                                   /* Большие мониторы */
 @media (min-width: 1536px) and (hover: hover) and (pointer: fine) {
-  /* Стили отображения ввода профиля */
+  
 }
 
 
