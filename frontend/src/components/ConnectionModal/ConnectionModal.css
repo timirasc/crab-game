@@ -52,6 +52,16 @@
   overflow: hidden;
   padding: 0;
 }
+.connection-modal.modal__win::before {
+  content: '';
+  height: 55%;
+  border-radius: 25%;
+  width: 80%;
+  position: absolute;
+  top: 30%;
+  left: 10%;
+  box-shadow: 0 0 10vh 5vh rgb(230 217 144);
+}
 .connection-modal.modal__win .connection-modal-bg {
   width: 100%;
   z-index: 1;
@@ -109,14 +119,6 @@
   z-index: 1;
   grid-row: 1 / 4;
   grid-column: 1 / 1;
-}
-.connection-modal.modal__loss::before {
-  content: '';
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
 }
 .connection-modal.modal__loss h2 {
   display: flex;
