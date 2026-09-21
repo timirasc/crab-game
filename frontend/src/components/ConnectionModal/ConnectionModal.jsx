@@ -20,35 +20,38 @@ export default function ConnectionModal({ offline, deadline, result, onExit }) {
       aria-labelledby="connection-title" 
       aria-describedby="connection-description"
     >
-      <img 
-        src={result 
-          ? `/images/ui/${result?.classTitle}-bg.png`
-          : "/images/ui/disconnect-modal-bg.png"}
-        alt=""
-        draggable="false"
-        className='connection-modal-bg'
-      />
-
+      {result && 
+        <img
+          src={result?.classTitle && `/images/ui/${result.classTitle}-bg.png`}
+          alt=""
+          draggable="false"
+          className='connection-modal-bg'
+        />
+      }
+      
       <h2 
         id="connection-title"
         className='unselectable'
       >
         {result?.title || (offline ? 'Соединение потеряно' : 'Соперник потерял соединение')}
       </h2>
-      {!result && 
-        <p id="connection-description">
-          {offline
-            ? 'Переподключаемся автоматически. Матч приостановлен.'
-            : seconds === 0
-              ? 'Ожидаем решения сервера…'
-              : 'Ожидаем переподключения соперника.'}
-        </p>
-      }
+      <div className="description-wrapper">
+        {!result && 
+          <p id="connection-description">
+            {offline
+              ? 'Автоматическое переподключение'
+              : seconds === 0
+                ? 'Ожидаем решения сервера…'
+                : 'Ожидаем переподключения соперника.'}
+          </p>
+        }
 
-      {!result && !offline && seconds !== null && (
-        <p className="connection-modal__timer" aria-label={`Осталось ${seconds} секунд`}>{seconds} сек.</p>
-      )}
-      {!result && offline && <p>Сервер даёт 60 секунд с момента обнаружения обрыва.</p>}
+        {!result && !offline && seconds !== null && (
+          <p className="connection-modal__timer" aria-label={`Осталось ${seconds} секунд`}>{seconds} сек.</p>
+        )}
+        {!result && offline && <p>У вас 60 секунд на подключение</p>}
+      </div>
+
       {result && 
         <div className='result-btn'>
           <button type="button" onClick={onExit}>В меню</button>
