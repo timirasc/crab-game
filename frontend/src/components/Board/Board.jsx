@@ -83,10 +83,10 @@ function Board({
                 selectedCrab?.id === crab.id
 
               const left =
-                ((crab.column + 0.5) / BOARD_SIZE) * 100
+                ((crab.column + 0.6) / BOARD_SIZE) * 97
 
               const top =
-                ((crab.row + 0.5) / BOARD_SIZE) * 100
+                ((crab.row + 0.6) / BOARD_SIZE) * 97
 
               return (
                 <div

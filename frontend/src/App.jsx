@@ -349,12 +349,21 @@ function App() {
     setReconnectDeadline(null)
   }
 
-  const result = endedReason ? {
-    title: isDraw ? 'Матч завершён без победителя' : winner === playerColor ? 'Победа!' : 'Поражение',
-    description: endedReason === 'reconnect_timeout'
-      ? winner === playerColor ? 'Соперник не переподключился за 60 секунд.' : 'Время переподключения истекло.'
-      : endedReason === 'opponent_left' ? 'Игрок покинул матч.' : 'Матч завершён.',
-  } : null
+  const result = endedReason
+    ? {
+        title: isDraw
+          ? 'Ничья'
+          : winner === playerColor
+            ? 'Победа'
+            : 'Поражение',
+        description: '',
+        classTitle: isDraw
+          ? 'draw'
+          : winner === playerColor
+            ? 'win'
+            : 'loss',
+      }
+    : null
 
   if (!profile) {
     return (
@@ -378,19 +387,57 @@ function App() {
     )
   }
 
+  if (gamePhase === 'rules') {
+    return (
+      <main className="game">
+        <section className='rules'>
+          <h2>Правила</h2>
+          <ul>
+            <li>Игроки ходят по очереди</li>
+            <li>Краб всегда перемешается на последнюю свободную клетку в выбранном направлении</li>
+            <li>Для победы собери 4 или более крабов в ряд вертикально или горизонтально</li>
+          </ul>
+          <button
+            className="back-to-menu"
+            type="button"
+            onClick={() => {
+              setErrorMessage('')
+              setGamePhase('menu')
+            }}
+          >
+            Назад
+          </button>
+        </section>
+      </main>
+    )
+  }
+
   if (gamePhase === 'menu') {
     const avatar = getAvatar(profile.avatarId)
     return (
       <main className="game-menu unselectable">
         <div className="menu-side-wrapper">
-          <img className='crab-game-logo' src="/images/Crab-game-logo.png" alt="Crab game" />
-
+          <img 
+            className='crab-game-logo' 
+            src="/images/Crab-game-logo.png" 
+            alt="Crab game"  
+            draggable="false"
+          />
           <div className="menu-profile-card">
-            <img src={avatar.src} alt={avatar.label} className='player__avatar'/>
-
+            <img 
+              src={avatar.src} 
+              alt={avatar.label} 
+              className='player__avatar' 
+              draggable="false"
+            />
             <div className="player__nickname">
               <p>{profile.nickname}</p>
-              <img className='profile-divider-line' src="/images/ui/line-profile.png" alt="" />
+              <img 
+                className='profile-divider-line' 
+                src="/images/ui/line-profile.png" 
+                alt="" 
+                draggable="false"
+              />
             </div>
           </div>
         </div>
@@ -403,6 +450,10 @@ function App() {
           onSettingsClick={() => {
             setErrorMessage('')
             setGamePhase('settings')
+          }}
+          onRulesClick={() => {
+            setErrorMessage('')
+            setGamePhase('rules')
           }}
         />
 
@@ -446,22 +497,34 @@ function App() {
       <div className="players-boaard-wrapper">
 
         <div className="players-board">
-          <div className="player-info">
+          {/* синий */}
+          <div className={`player-info`}>
             <img src="/images/ui/players-board/avatar-chain-frame.png" alt="" className="avatar-frame" />
-            <div className="avatar"></div>
-            <div className="nickname-board">testtest01</div>
+            <div className="avatar-wrapper player__blue">
+              <Avatar
+                avatarId={players.blue?.avatarId}
+                className="player__avatar"
+              />
+            </div>
+            <div className="nickname-board">{players.blue?.nickname}</div>
           </div>
 
           <div className="current-player-info">
             <div className="current-player-wrapper">
-              <img src="/images/ui/boards/board-red.png" alt="" />
+              <img src="/images/ui/boards/board-red.png" alt="" className={currentPlayer === 'red' ? 'current__red' : 'current__blue'}/>
             </div>
           </div>
 
-          <div className="player-info">
+          {/* красный */}
+          <div className={`player-info`}>
             <img src="/images/ui/players-board/avatar-chain-frame.png" alt="" className="avatar-frame" />
-            <div className="avatar"></div>
-            <div className="nickname-board">testtest02</div>
+            <div className="avatar-wrapper player__red">
+              <Avatar
+                avatarId={players.red?.avatarId}
+                className="player__avatar"
+              />
+            </div>
+            <div className="nickname-board">{players.red?.nickname}</div>
           </div>
         </div>
 

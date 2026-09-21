@@ -1,6 +1,7 @@
 function MainMenu({ 
   onPvpClick,
-  onSettingsClick 
+  onSettingsClick,
+  onRulesClick
 }) {
   return (
     <section className="main-menu">
@@ -8,7 +9,7 @@ function MainMenu({
         <button
           className="main-menu__button tutorial"
           type="button"
-          disabled
+          onClick={onRulesClick}
         >
           Правила
         </button>
